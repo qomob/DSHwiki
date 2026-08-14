@@ -193,6 +193,19 @@ async function main() {
   repos = repos.filter(isRelevant)
   console.log(`相关性过滤: ${before} → ${repos.length} (剔除 ${before - repos.length} 个非 dsh 生态)`)
 
+  // 最终去重：按 fullName 兜底去重(防止多数据源产生的同仓库重复)
+  const seenFull = new Set()
+  const dedupBefore = repos.length
+  repos = repos.filter((r) => {
+    const key = r.fullName || r.id
+    if (seenFull.has(key)) return false
+    seenFull.add(key)
+    return true
+  })
+  if (dedupBefore !== repos.length) {
+    console.log(`最终去重: ${dedupBefore} → ${repos.length} (移除 ${dedupBefore - repos.length} 个重复)`)
+  }
+
   // 4. 翻译
   repos = await translateDescriptions(repos)
 
