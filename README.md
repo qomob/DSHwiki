@@ -14,7 +14,7 @@
 
 <p>
   <a href="#快速开始">快速开始</a> · 
-  <a href="#wiki-教程">Wiki 教程</a> · 
+  <a href="#ds手册">DSH手册</a> · 
   <a href="#插件聚合">插件聚合</a> · 
   <a href="#部署">部署</a>
 </p>
@@ -25,15 +25,16 @@
 
 两个栏目，一个站点：
 
-- **入门手册（Wiki）** — 按上手路径编排的中文教程：先跑通任务，再把重复劳动沉淀成自己的 AI 工作流。章节可折叠、含可复制的对话示例。
-- **插件库** — 从 DeepSeek Harness 生态里挑出值得尝试的项目，按用途分类陈列，每件标注安装方式；英文简介配中文说明。
+- **插件库** — 从 DeepSeek Harness 生态里挑出值得尝试的项目，按用途分类陈列（左侧分类侧边栏），每件标注安装方式；英文简介配中文说明。
+- **DSH手册** — 按上手路径编排的中文教程：先跑通任务，再把重复劳动沉淀成自己的 AI 工作流。章节可折叠、含可复制的对话示例。
 
 ## ✨ 特性
 
 - **纯静态、零后端** — Vite 构建的 SPA，`dist/` 丢到任意静态托管即可上线
-- **每日自动更新** — GitHub Actions 定时聚合 → 构建验证 → 数据提交，全程无人干预
-- **安全加固** — 全局 ErrorBoundary、数据 schema 校验、密钥零硬编码、限流重试上限
-- **SEO 就绪** — Open Graph / Twitter Card meta、`robots.txt`、`sitemap.xml` 开箱即用
+- **自动更新** — GitHub Actions 定时聚合 + push 触发 → 构建 → 自动部署到服务器，全程无人干预
+- **插件优先布局** — 插件区在首屏后，左侧粘性分类侧边栏 + 右侧卡片流，双栏架构
+- **安全加固** — 全局 ErrorBoundary、数据 schema 校验、密钥零硬编码、限流重试、部署用户降权
+- **SEO 就绪** — canonical、JSON-LD 结构化数据、og:image 分享图、`robots.txt`、`sitemap.xml`、noscript 降级
 - **无额外依赖** — 聚合脚本仅用 Node 18+ 内置 `fetch`；测试用 Node 内置 test runner
 - **中英双语** — UI 与教程内容均支持中英切换，语言偏好本地持久化
 - **对齐官方设计** — `#0a0a0a` 黑底 + 白色透明度体系 + DM Sans，视觉与 deepseek.com/harness 一致
@@ -50,8 +51,8 @@
 ### 本地开发
 
 ```bash
-git clone https://github.com/你的用户名/dsh-wiki.git
-cd dsh-wiki
+git clone https://github.com/qomob/DSHwiki.git
+cd DSHwiki
 npm install
 npm run dev      # → http://localhost:5173
 ```
@@ -69,9 +70,9 @@ npm run dev      # → http://localhost:5173
 
 ---
 
-## Wiki 教程
+## DSH手册
 
-30 章原创内容，按认知递进分四段：
+中文入门手册，按认知递进分四段（可折叠，默认全部收拢）：
 
 | PART | 主题 | 适合谁 | 标识色 |
 |---|---|---|---|
@@ -82,13 +83,12 @@ npm run dev      # → http://localhost:5173
 
 阅读体验优化：
 
-- **PART 级折叠** — 默认仅展开 PART 1，避免 30 章一屏导致认知过载
+- **PART 级折叠** — 四个 PART 默认全部收拢为紧凑单行，点击展开
 - **可复制对话示例** — 案例章附完整 prompt，照着粘贴即可上手
 - **进阶内容折叠** — `——` 分隔符自动把进阶要点收进灰底小字区块
 - **顶部进度条** — 长文阅读时实时反馈"读到哪了"
-- **结尾 CTA** — 读完教程自然引导到插件目录
 
-教程数据位于 [`src/data/blueprint.js`](src/data/blueprint.js)，中英双语结构化定义。
+手册数据位于 [`src/data/blueprint.js`](src/data/blueprint.js)，中英双语结构化定义。
 
 ---
 
@@ -99,17 +99,19 @@ npm run dev      # → http://localhost:5173
 ### 流程
 
 ```
-GitHub Search API（多关键词）
+GitHub Search API（三个限定 topic）
     ↓
-融合 awesome 精选列表（README 提取）
+融合 awesome 精选列表（README 提取 + topic 白名单过滤）
     ↓
 去重（fullName 去重）
     ↓
 相关度评分（官方加成 + topics + 星标 + 活跃度）
     ↓
+相关性过滤（描述必须提到 dsh / DeepSeek Harness）
+    ↓
 自动分类（16 类正则推断）
     ↓
-DeepSeek 翻译（可选，无 key 降级保留原文）
+LLM 翻译（兼容 OpenAI 协议，可选）
     ↓
 schema 校验 → 写入 src/data/repos.json
 ```
@@ -117,9 +119,11 @@ schema 校验 → 写入 src/data/repos.json
 ### 手动运行
 
 ```bash
-# 配置环境变量（GH_TOKEN 推荐配置以提升限额）
-export GH_TOKEN=ghp_xxx           # GitHub Token，60→5000 次/小时
-export DEEPSEEK_API_KEY=sk-xxx    # 可选，用于翻译外文简介
+# 配置环境变量
+export GH_TOKEN=ghp_xxx                    # GitHub Token（推荐，提升配额到 5000/小时）
+export LLM_API_KEY=sk-xxx                  # 可选，用于翻译（兼容 OpenAI 协议）
+export LLM_API_BASE=https://api.deepseek.com  # 可选，默认 DeepSeek
+export LLM_MODEL=deepseek-chat             # 可选，默认 deepseek-chat
 
 npm run aggregate
 ```
@@ -128,27 +132,35 @@ npm run aggregate
 
 | 变量 | 必需 | 默认 | 说明 |
 |---|---|---|---|
-| `GH_TOKEN` | 推荐 | 匿名 60 次/小时 | GitHub Token，提升搜索限额到 5000 次/小时 |
-| `DEEPSEEK_API_KEY` | 可选 | 跳过翻译 | 把外文简介翻译为中文；未配置则保留原文 |
+| `GH_TOKEN` | 推荐 | 匿名 60 次/小时 | GitHub Token，提升配额到 5000 次/小时 |
+| `LLM_API_KEY` | 可选 | 跳过翻译 | 任意 OpenAI 兼容 API 的 Key |
+| `LLM_API_BASE` | 可选 | `https://api.deepseek.com` | OpenAI 兼容接口地址 |
+| `LLM_MODEL` | 可选 | `deepseek-chat` | 翻译用模型名 |
 
 ### 数据可靠性保障
 
-- **限流重试上限** — 最多 3 次指数退避，`reset` 头非法时不重试，杜绝无限递归
+- **限流等待重试** — 搜索/补全遇到限流时等待 reset 后重试，不中断流程
+- **topic 白名单** — 只收录命中 `dsh-plugin` / `dsh` / `deepseek-harness` 三个 topic 的仓库
+- **相关性过滤** — 描述必须真正提到 dsh / DeepSeek Harness，剔除蹭流量项目
 - **schema 校验** — 写入前断言 `repos` 非空、必填字段齐全、URL 合法，不合法则中止（保护上次好数据）
-- **翻译降级** — 无 API key 时优雅保留原文，不阻塞流程
+- **翻译降级** — 无 LLM key 时优雅保留原文，不阻塞流程
 - **单元测试** — 分类/评分/提取/格式化等纯函数均有测试覆盖（27 个用例）
 
 ---
 
 ## GitHub Actions
 
-[`.github/workflows/daily-aggregate.yml`](.github/workflows/daily-aggregate.yml) 每天北京时间 08:00（UTC 00:00）自动运行：
+[`.github/workflows/daily-aggregate.yml`](.github/workflows/daily-aggregate.yml) 自动运行：
 
 ```
-聚合数据 → 提交到仓库 → 构建验证 → 上传产物
+聚合数据 → 提交（有变化时）→ 构建 → rsync 部署到服务器 → 上传产物
 ```
 
-也支持手动触发（仓库 Actions 页 → Run workflow）。
+触发方式：
+
+- **定时** — 每天北京时间 08:00
+- **push** — 推送 main（排除 repos.json 数据提交，避免递归）
+- **手动** — 仓库 Actions 页 → Run workflow（可勾选"强制部署"）
 
 ### 配置 Secrets
 
@@ -156,8 +168,11 @@ npm run aggregate
 
 | Secret | 说明 |
 |---|---|
-| `GH_TOKEN` | PAT（经典 Token，勾选 `public_repo` 只读即可），提升搜索限额 |
-| `DEEPSEEK_API_KEY` | DeepSeek 平台获取，用于翻译。未配置则跳过 |
+| `GH_TOKEN` | PAT（classic，勾选 `public_repo` 只读），提升配额 |
+| `LLM_API_KEY` | 翻译用 API Key（兼容 OpenAI 协议） |
+| `LLM_API_BASE` | 翻译接口地址（默认 DeepSeek） |
+| `LLM_MODEL` | 翻译模型名（默认 deepseek-chat） |
+| `SSH_HOST` / `SSH_USER` / `SSH_PRIVATE_KEY` / `DEPLOY_PATH` | 自动部署到服务器的 SSH 配置 |
 
 ---
 
@@ -165,14 +180,16 @@ npm run aggregate
 
 构建产物为纯静态文件（`dist/`），可部署到任意静态托管。
 
-### 方式一：宝塔面板（阿里云等）
+### 方式一：宝塔面板（阿里云等，当前生产环境）
+
+当前线上：**https://dsh.qomob.ai**（宝塔 + Nginx + HTTPS）。
 
 详见 [`DEPLOY-BAOTA.md`](DEPLOY-BAOTA.md) — 包含完整的 Nginx 配置、HTTPS 申请、安全加固清单和自动化部署方案。
 
 核心 Nginx 配置：
 
 ```nginx
-root /www/wwwroot/dsh-wiki;
+root /www/wwwroot/dsh.qomob.ai;
 index index.html;
 
 location / {
@@ -207,7 +224,7 @@ location = /index.html {                # 入口不缓存
 - [ ] `npm run build` 通过
 - [ ] `npm test` 全绿（27 个测试）
 - [ ] `src/data/repos.json` 非空且 `generatedAt` 是近期时间戳
-- [ ] `public/robots.txt` 和 `public/sitemap.xml` 中占位域名已替换为实际域名
+- [ ] 部署后确认 `https://你的域名/robots.txt` 和 `/sitemap.xml` 正常返回
 - [ ] 静态托管层已配置 SPA fallback
 - [ ] HTTPS 已启用（社交分享预览的必要条件）
 - [ ] 部署后用 [opengraph.xyz](https://www.opengraph.xyz/) 验证 OG meta
@@ -222,14 +239,14 @@ location = /index.html {                # 入口不缓存
 │   ├── components/           # React 组件
 │   │   ├── ErrorBoundary.jsx     # 全局错误边界（防白屏）
 │   │   ├── Navbar.jsx           # 导航栏 + 语言切换
-│   │   ├── Hero.jsx             # 首屏 + 代码示例
+│   │   ├── Hero.jsx             # 首屏 + 代码示例 + CTA
 │   │   ├── StatsBar.jsx         # 统计数据条
-│   │   ├── BlueprintSection.jsx # Wiki 教程（可折叠 PART + 进度条 + CTA）
-│   │   ├── HubSection.jsx       # 插件目录（筛选 + 排序 + 搜索）
+│   │   ├── HubSection.jsx       # 插件区（左侧分类侧边栏 + 右侧卡片流 + 热榜 Top10）
+│   │   ├── BlueprintSection.jsx # DSH手册（可折叠 PART + 进度条）
 │   │   ├── RepoCard.jsx         # 插件卡片
 │   │   └── Footer.jsx
 │   ├── data/
-│   │   ├── blueprint.js         # Wiki 教程数据（中英双语 30 章）
+│   │   ├── blueprint.js         # 手册教程数据（中英双语 30 章）
 │   │   └── repos.json           # 聚合产物（每日自动更新）
 │   ├── i18n/
 │   │   ├── LanguageContext.jsx  # 语言上下文 + 持久化
@@ -242,17 +259,18 @@ location = /index.html {                # 入口不缓存
 │   └── index.css               # Tailwind v4 主题（对齐官方设计 token）
 ├── scripts/aggregate/         # 每日聚合管道（零额外依赖）
 │   ├── config.mjs             # 搜索关键词 + awesome 源 + 输出路径
-│   ├── github.mjs             # GitHub API 封装（限流重试上限 3）
+│   ├── github.mjs             # GitHub API 封装（限流等待重试）
 │   ├── awesome.mjs            # awesome 列表 README 提取
-│   ├── translate.mjs          # DeepSeek 翻译（可降级）
-│   └── aggregate.mjs          # 主流程（含 schema 校验）
+│   ├── translate.mjs          # LLM 翻译（OpenAI 兼容，可降级）
+│   └── aggregate.mjs          # 主流程（含去重/过滤/schema 校验）
 ├── tests/unit.test.mjs        # 纯函数单测（27 个用例）
 ├── public/                    # 静态资源
 │   ├── favicon.svg
 │   ├── icons.svg
+│   ├── og-image.png           # 社交分享图 1200×630
 │   ├── robots.txt             # SEO
 │   └── sitemap.xml            # SEO
-├── .github/workflows/         # CI 定时任务
+├── .github/workflows/         # CI 定时任务 + 自动部署
 │   └── daily-aggregate.yml
 ├── DEPLOY-BAOTA.md            # 宝塔面板部署指南
 └── LICENSE                    # MIT
@@ -266,9 +284,9 @@ location = /index.html {                # 入口不缓存
 |---|---|---|
 | 框架 | React 19 + Vite 8 | SPA，构建时内联数据 |
 | 样式 | Tailwind CSS v4 | 对齐 DeepSeek 官网设计 token |
-| 数据 | GitHub Search API + awesome 列表 | 每日聚合 → `repos.json` |
-| 翻译 | DeepSeek API | 可选，无 key 降级保留原文 |
-| CI | GitHub Actions | 每日定时聚合 + 构建验证 |
+| 数据 | GitHub Search API + awesome 列表 | 定时聚合 → `repos.json` |
+| 翻译 | LLM API（OpenAI 兼容） | 可选，无 key 降级保留原文 |
+| CI | GitHub Actions | 定时 + push 触发，rsync 自动部署 |
 | 检查 | oxlint + node:test | 零额外依赖的 lint + 单测 |
 
 ---
@@ -277,7 +295,7 @@ location = /index.html {                # 入口不缓存
 
 欢迎提交 Issue 和 PR：
 
-- 内容纠错 / 教程补充 → 编辑 `src/data/blueprint.js`
+- 内容纠错 / 手册补充 → 编辑 `src/data/blueprint.js`
 - 聚合源增加 → 编辑 `scripts/aggregate/config.mjs` 的 `SEARCH_QUERIES` 和 `AWESOME_SOURCES`
 - 分类规则调整 → 编辑 `src/lib/categories.js`（有测试覆盖，改完跑 `npm test` 确认）
 - Bug 修复 → 附复现步骤，优先修复有测试覆盖的纯函数问题
