@@ -4,6 +4,8 @@ name: 每日聚合 dsh 生态
 on:
   schedule:
     - cron: '0 0 * * *' # UTC 00:00 = 北京时间 08:00
+  push:
+    branches: [main] # 推送 main 时自动聚合 + 构建部署
   workflow_dispatch:
     inputs:
       force_deploy:
