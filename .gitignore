@@ -17,6 +17,10 @@ dist-ssr
 .env.*
 !.env.example
 
+# 部署密钥与临时打包产物——绝不提交
+deploy-tmp/
+dsh-dist.zip
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
