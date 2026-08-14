@@ -45,7 +45,17 @@ export async function getRepo(owner, repo) {
   try {
     return await ghFetch(`https://api.github.com/repos/${owner}/${repo}`)
   } catch (e) {
+    // 限流耗尽：抛专门错误，让上层短路跳过剩余请求
+    if (/限流/.test(e.message)) throw new RateLimitError(e.message)
     console.warn(`获取仓库失败 ${owner}/${repo}: ${e.message}`)
     return null
+  }
+}
+
+// 限流耗尽标记：外层循环捕获后停止补全，避免逐仓库等 reset
+export class RateLimitError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = 'RateLimitError'
   }
 }

@@ -1,7 +1,7 @@
 // DSH 工坊 每日聚合主流程
 // 1. GitHub Search API 多关键词聚合  2. 融合 awesome 精选列表  3. 去重  4. 相关度评分  5. 分类  6. DeepSeek 翻译  7. 输出 repos.json
 import { writeFileSync } from 'node:fs'
-import { searchRepos, getRepo } from './github.mjs'
+import { searchRepos, getRepo, RateLimitError } from './github.mjs'
 import { fetchAwesomeRepos } from './awesome.mjs'
 import { translateDescriptions } from './translate.mjs'
 import { SEARCH_QUERIES, OUTPUT_PATH, OFFICIAL_OWNER } from './config.mjs'
@@ -114,14 +114,32 @@ async function main() {
   // 2. awesome 精选列表
   const awesomeSet = await fetchAwesomeRepos()
   console.log(`awesome 列表共 ${awesomeSet.size} 个候选，补全详情…`)
-  for (const full of awesomeSet) {
-    if (repoMap.has(full)) {
-      repoMap.get(full).source = 'awesome-list'
-      continue
+  // fetchAwesomeRepos 返回 Map(fullName -> true),遍历其 keys
+  let awesomeSkipped = 0
+  let awesomeAdded = 0
+  try {
+    for (const full of awesomeSet.keys()) {
+      if (repoMap.has(full)) {
+        repoMap.get(full).source = 'awesome-list'
+        continue
+      }
+      const [owner, repo] = full.split('/')
+      const item = await getRepo(owner, repo)
+      if (item) {
+        repoMap.set(full, normalize(item, 'awesome-list'))
+        awesomeAdded++
+      }
     }
-    const [owner, repo] = full.split('/')
-    const item = await getRepo(owner, repo)
-    if (item) repoMap.set(full, normalize(item, 'awesome-list'))
+  } catch (e) {
+    if (e instanceof RateLimitError) {
+      console.warn(`⚠️ GitHub API 配额耗尽，跳过剩余 awesome 补全 (已补全 ${awesomeAdded} 个)`)
+      awesomeSkipped = awesomeSet.size - awesomeAdded
+    } else {
+      throw e
+    }
+  }
+  if (awesomeSkipped > 0) {
+    console.log(`awesome 补全完成: 新增 ${awesomeAdded}, 因配额跳过 ${awesomeSkipped}`)
   }
 
   // 3. 分类 + 评分 + 安装命令
