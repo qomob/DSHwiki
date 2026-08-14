@@ -56,6 +56,8 @@ export const UI = {
       copy: '复制',
       copied: '已复制',
       viewGithub: '在 GitHub 查看',
+      loadMore: '加载更多',
+      loadedAll: '已加载全部',
     },
     footer: {
       desc: '围绕 DeepSeek Harness (dsh) 的中文 Wiki 与插件聚合站点。Wiki 部分为原创中文教程，DSH 插件数据每日通过 GitHub 官方接口聚合，按相关度评分、去重后上架，外文简介自动翻译为中文。',
@@ -122,6 +124,8 @@ export const UI = {
       copy: 'Copy',
       copied: 'Copied',
       viewGithub: 'View on GitHub',
+      loadMore: 'Load more',
+      loadedAll: 'All loaded',
     },
     footer: {
       desc: 'A community Wiki and plugin directory for DeepSeek Harness (dsh). The Wiki is original Chinese tutorials. Plugin data is aggregated daily via the GitHub API, scored and deduplicated, with auto-translated descriptions.',

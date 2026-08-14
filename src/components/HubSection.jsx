@@ -17,6 +17,11 @@ export default function HubSection() {
   const [selLang, setSelLang] = useState('all')
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('stars')
+  const [visibleCount, setVisibleCount] = useState(18)
+  const PAGE_SIZE = 18
+
+  // 筛选条件变化时重置可见数量
+  const resetVisible = () => setVisibleCount(PAGE_SIZE)
 
   const languages = useMemo(() => {
     const m = new Map()
@@ -128,7 +133,7 @@ export default function HubSection() {
                 <button
                   key={c.id}
                   type="button"
-                  onClick={() => setCat(c.id)}
+                  onClick={() => { setCat(c.id); resetVisible() }}
                   className={`inline-flex items-center gap-1.5 rounded-pill border px-3 py-1.5 text-xs transition-colors ${
                     active
                       ? 'border-border-secondary bg-surface-raised text-fg'
@@ -160,14 +165,14 @@ export default function HubSection() {
               <input
                 type="search"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => { setQuery(e.target.value); resetVisible() }}
                 placeholder={t.searchPlaceholder}
                 className="w-full rounded-[10px] border border-border-subtle bg-surface-2 py-2 pl-9 pr-3 text-sm text-fg placeholder:text-fg-dim focus:border-border-secondary focus:outline-none"
               />
             </div>
             <select
               value={selLang}
-              onChange={(e) => setSelLang(e.target.value)}
+              onChange={(e) => { setSelLang(e.target.value); resetVisible() }}
               className="rounded-[10px] border border-border-subtle bg-surface-2 px-3 py-2 text-sm text-fg-muted focus:border-border-secondary focus:outline-none"
             >
               <option value="all">{t.allLangs}</option>
@@ -179,7 +184,7 @@ export default function HubSection() {
             </select>
             <select
               value={sort}
-              onChange={(e) => setSort(e.target.value)}
+              onChange={(e) => { setSort(e.target.value); resetVisible() }}
               className="rounded-[10px] border border-border-subtle bg-surface-2 px-3 py-2 text-sm text-fg-muted focus:border-border-secondary focus:outline-none"
             >
               {SORT_OPTIONS.map((s) => (
@@ -196,13 +201,37 @@ export default function HubSection() {
           {t.showing} <span className="font-mono text-fg-secondary">{filtered.length}</span> {t.of} {repos.length} {t.plugins}
         </div>
 
-        {/* 卡片网格 */}
+        {/* 卡片网格——分页显示 */}
         {filtered.length > 0 ? (
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((r) => (
-              <RepoCard key={r.id} repo={r} />
-            ))}
-          </div>
+          <>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {filtered.slice(0, visibleCount).map((r) => (
+                <RepoCard key={r.id} repo={r} />
+              ))}
+            </div>
+
+            {/* 加载更多 */}
+            {visibleCount < filtered.length && (
+              <div className="mt-8 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount((v) => v + PAGE_SIZE)}
+                  className="ds-btn-secondary inline-flex items-center gap-2 !px-6 !py-2.5 !text-sm"
+                >
+                  {t.loadMore}
+                  <span className="font-mono text-xs text-fg-dim">
+                    ({filtered.length - visibleCount})
+                  </span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 5v14M5 12l7 7 7-7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+            {visibleCount >= filtered.length && filtered.length > PAGE_SIZE && (
+              <div className="mt-8 text-center text-xs text-fg-dim">{t.loadedAll}</div>
+            )}
+          </>
         ) : (
           <div className="mt-10 rounded-[16px] border border-border-subtle border-dashed bg-surface-2 py-16 text-center">
             <div className="text-sm text-fg-muted">{t.noMatch}</div>
@@ -212,6 +241,7 @@ export default function HubSection() {
                 setCat('all')
                 setSelLang('all')
                 setQuery('')
+                resetVisible()
               }}
               className="ds-btn-secondary mt-3 !px-3 !py-1.5 !text-xs"
             >
