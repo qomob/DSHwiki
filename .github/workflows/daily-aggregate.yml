@@ -6,7 +6,6 @@ on:
     - cron: '0 0 * * *' # UTC 00:00 = 北京时间 08:00
   push:
     branches: [main] # 推送 main 时自动聚合 + 构建部署
-    # 排除 repos.json 数据提交(CI 自己提交数据时不触发,避免递归循环)
     paths-ignore:
       - 'src/data/repos.json'
   workflow_dispatch:
@@ -39,12 +38,24 @@ jobs:
       - name: 安装依赖
         run: npm ci
 
+      - name: 诊断配置与配额
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY || secrets.DEEPSEEK_API_KEY }}
+          LLM_API_BASE: ${{ secrets.LLM_API_BASE }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL }}
+        run: |
+          echo "GH_TOKEN: $([ -n "$GH_TOKEN" ] && echo YES || echo NO) 前缀 ${GH_TOKEN:0:4}"
+          echo "LLM_KEY: $([ -n "$LLM_API_KEY" ] && echo YES || echo NO) BASE:${LLM_API_BASE:-def} MODEL:${LLM_MODEL:-def}"
+          echo "--- 配额(带token) ---"
+          curl -s -m10 -H "Authorization: Bearer ${GH_TOKEN}" https://api.github.com/rate_limit | head -c 300
+          echo ""
+
       - name: 运行聚合脚本
         continue-on-error: true
         id: aggregate
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
-          # 翻译：兼容 OpenAI 协议的任何 LLM API(默认 DeepSeek)
           LLM_API_KEY: ${{ secrets.LLM_API_KEY || secrets.DEEPSEEK_API_KEY }}
           LLM_API_BASE: ${{ secrets.LLM_API_BASE }}
           LLM_MODEL: ${{ secrets.LLM_MODEL }}
@@ -55,12 +66,6 @@ jobs:
         run: |
           echo "⚠️ 聚合脚本失败（可能是 GitHub API 限流），使用现有 repos.json 继续构建部署"
           echo "当前 repos.json 仓库数: $(node -e "console.log(require("./src/data/repos.json").repos.length)")"
-
-      - name: 诊断翻译配置
-        run: |
-          echo "LLM_API_KEY 已设置: $([ -n "$LLM_API_KEY" ] && echo YES || echo NO)"
-          echo "LLM_API_BASE: ${LLM_API_BASE:-default-deepseek}"
-          echo "LLM_MODEL: ${LLM_MODEL:-default-deepseek-chat}"
 
       - name: 检测数据变化
         id: git_diff
@@ -81,13 +86,10 @@ jobs:
       - name: 构建前端
         run: npm run build
 
-      # ===== 自动部署到服务器 =====
       - name: 部署到服务器
         if: steps.git_diff.outputs.changed == 'true' || github.event.inputs.force_deploy == 'true'
-        # 锁定到精确 SHA，防止 action 作者更新 tag 后注入恶意代码
         uses: burnett01/rsync-deployments@796cf0d5e4b535745ce49d7429f77cf39e25ef39
         with:
-          # deploy 用户推送; 排除宝塔锁定文件(-a 保留权限,Nginx 可读)
           switches: -avz --delete --exclude=.user.ini
           path: dist/
           remote_path: ${{ secrets.DEPLOY_PATH }}
