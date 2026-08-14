@@ -5,7 +5,7 @@ export const UI = {
     brand: { name: 'DSH 工坊', tagline: '装点你的 Agent' },
     hero: {
       badge: 'DeepSeek Harness 社区镜像',
-      title: '给 Agent 挑趁手的装备',
+      title: '给 DSH 挑趁手的装备',
       desc: '这里收集 DeepSeek Harness 生态里值得一试的插件：界面、记忆、视觉、自动化……每件都标注用途与安装方式。配套的中文 Wiki 帮你从零上手 dsh，把 AI 从聊天框里放出来干活。',
       unofficial: '社区维护，非官方',
       ctaWiki: '从 Wiki 入门',
@@ -75,7 +75,7 @@ export const UI = {
     brand: { name: 'DSH Workshop', tagline: 'Gear up your agent' },
     hero: {
       badge: 'DeepSeek Harness Community',
-      title: 'Hand-picked gear for your agent',
+      title: 'Hand-picked gear for DSH',
       desc: 'A curated collection of plugins worth trying from the DeepSeek Harness ecosystem — UI, memory, vision, automation. Each item lists its purpose and install method. The companion Chinese Wiki walks you from zero to running dsh for real work.',
       unofficial: 'Community-maintained',
       ctaWiki: 'Start the Wiki',

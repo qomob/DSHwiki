@@ -2,38 +2,76 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#0a0a0a" />
+
+    <!-- 基础 SEO -->
+    <title>DSH 工坊 · DeepSeek Harness 中文入门手册与插件收录库</title>
     <meta
       name="description"
-      content="DSH 工坊 —— 给 Agent 挑趁手的装备。DeepSeek Harness 中文入门手册 + 社区插件收录库"
+      content="DSH 工坊——给 DSH 挑趁手的装备。DeepSeek Harness 中文入门手册,按上手路径编排;社区插件收录库,按用途分类,每件标注安装方式。"
     />
-    <!-- Open Graph / 社交分享预览 -->
+    <link rel="canonical" href="https://dsh.qomob.ai/" />
+
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="DSH 工坊 · 装点你的 Agent" />
+    <meta property="og:url" content="https://dsh.qomob.ai/" />
+    <meta property="og:title" content="DSH 工坊 · 给 DSH 挑趁手的装备" />
     <meta
       property="og:description"
-      content="DeepSeek Harness 中文入门手册 + 社区插件收录库,按用途分类,每件标注安装方式"
+      content="DeepSeek Harness 中文入门手册 + 社区插件收录库,按用途分类,每件标注安装方式。"
     />
     <meta property="og:locale" content="zh_CN" />
     <meta property="og:site_name" content="DSH 工坊" />
+    <meta property="og:image" content="https://dsh.qomob.ai/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="DSH 工坊 · 装点你的 Agent" />
+    <meta name="twitter:title" content="DSH 工坊 · 给 DSH 挑趁手的装备" />
     <meta
       name="twitter:description"
-      content="DeepSeek Harness 中文入门手册 + 社区插件收录库,按用途分类,每件标注安装方式"
+      content="DeepSeek Harness 中文入门手册 + 社区插件收录库,按用途分类,每件标注安装方式。"
     />
+    <meta name="twitter:image" content="https://dsh.qomob.ai/og-image.png" />
+
+    <!-- 结构化数据:WebSite + SoftwareApplication + ItemList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "DSH 工坊",
+      "url": "https://dsh.qomob.ai/",
+      "description": "DeepSeek Harness 中文入门手册与社区插件收录库",
+      "inLanguage": "zh-CN",
+      "publisher": {
+        "@type": "Organization",
+        "name": "DSH 工坊",
+        "url": "https://dsh.qomob.ai/"
+      }
+    }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=Roboto+Mono:wght@400&display=swap"
       rel="stylesheet"
     />
-    <title>DSH 工坊 · DeepSeek Harness 社区插件与手册</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <noscript>
+        <div style="max-width:720px;margin:0 auto;padding:40px 24px;font-family:system-ui,sans-serif;color:#0a0a0a">
+          <h1>DSH 工坊 · DeepSeek Harness 中文入门手册与插件收录库</h1>
+          <p>本站收集 DeepSeek Harness 生态中值得一试的插件（界面、记忆、视觉、自动化等），按用途分类，每件标注安装方式；并配有中文入门手册。</p>
+          <p>请启用 JavaScript 以查看完整内容。</p>
+          <p><a href="https://github.com/qomob/DSHwiki">项目源码</a> · <a href="https://dsh.qomob.ai/sitemap.xml">站点地图</a></p>
+        </div>
+      </noscript>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
