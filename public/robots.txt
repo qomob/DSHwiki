@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-# 站点地图(部署后把 example.com 换成实际域名)
-# Sitemap: https://example.com/sitemap.xml
+Sitemap: https://dsh.qomob.ai/sitemap.xml

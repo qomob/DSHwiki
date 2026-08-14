@@ -1,10 +1,15 @@
 name: 每日聚合 dsh 生态
 
-# 每天北京时间 08:00 自动聚合，也支持手动触发
+# 每天北京时间 08:00 自动聚合 → 构建部署到服务器，也支持手动触发
 on:
   schedule:
     - cron: '0 0 * * *' # UTC 00:00 = 北京时间 08:00
   workflow_dispatch:
+    inputs:
+      force_deploy:
+        description: '强制部署（即使数据无变化也推送 dist 到服务器）'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -31,28 +36,43 @@ jobs:
 
       - name: 运行聚合脚本
         env:
-          # GitHub Token：建议用 PAT 以提高搜索限额到 5000/小时；未配置则用匿名 60/小时
           GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
-          # DeepSeek API Key：用于把外文简介翻译为中文；未配置则保留原文
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: npm run aggregate
 
-      - name: 提交聚合数据
+      - name: 检测数据变化
+        id: git_diff
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if git diff --quiet src/data/repos.json; then
-            echo "数据无变化，跳过提交"
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "数据无变化"
           else
             git add src/data/repos.json
             git commit -m "chore(data): 每日聚合 dsh 生态 $(date -u +%Y-%m-%d)"
             git push
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "数据已更新并提交"
           fi
 
-      - name: 构建前端验证
+      - name: 构建前端
         run: npm run build
 
-      - name: 上传构建产物
+      # ===== 自动部署到服务器 =====
+      # 条件：数据有变化 或 手动勾选强制部署
+      - name: 部署到服务器
+        if: steps.git_diff.outputs.changed == 'true' || github.event.inputs.force_deploy == 'true'
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete
+          path: dist/
+          remote_path: ${{ secrets.DEPLOY_PATH }}
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 上传构建产物（备份）
         uses: actions/upload-artifact@v4
         with:
           name: dist
