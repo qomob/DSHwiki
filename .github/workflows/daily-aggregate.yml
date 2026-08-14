@@ -28,17 +28,25 @@ jobs:
       - name: 安装 Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: 安装依赖
         run: npm ci
 
       - name: 运行聚合脚本
+        continue-on-error: true
+        id: aggregate
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: npm run aggregate
+
+      - name: 聚合失败时用现有数据继续
+        if: steps.aggregate.outcome == 'failure'
+        run: |
+          echo "⚠️ 聚合脚本失败（可能是 GitHub API 限流），使用现有 repos.json 继续构建部署"
+          echo "当前 repos.json 仓库数: $(node -e "console.log(require("./src/data/repos.json").repos.length)")"
 
       - name: 检测数据变化
         id: git_diff
@@ -51,16 +59,15 @@ jobs:
           else
             git add src/data/repos.json
             git commit -m "chore(data): 每日聚合 dsh 生态 $(date -u +%Y-%m-%d)"
-            git push
+            git push || echo "push 失败（可能是 token 权限不足，不影响后续构建部署）"
             echo "changed=true" >> $GITHUB_OUTPUT
-            echo "数据已更新并提交"
+            echo "数据已更新"
           fi
 
       - name: 构建前端
         run: npm run build
 
       # ===== 自动部署到服务器 =====
-      # 条件：数据有变化 或 手动勾选强制部署
       - name: 部署到服务器
         if: steps.git_diff.outputs.changed == 'true' || github.event.inputs.force_deploy == 'true'
         uses: burnett01/rsync-deployments@7.0.1
