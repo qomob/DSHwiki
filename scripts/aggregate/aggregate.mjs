@@ -1,10 +1,10 @@
 // DSH 工坊 每日聚合主流程
-// 1. GitHub Search API 多关键词聚合  2. 融合 awesome 精选列表  3. 去重  4. 相关度评分  5. 分类  6. DeepSeek 翻译  7. 输出 repos.json
+// 1. GitHub Search API(topic 限定) 2. 去重 3. 相关度评分 4. 分类 5. 翻译 6. 输出 repos.json
 import { writeFileSync } from 'node:fs'
 import { searchRepos, getRepo, RateLimitError } from './github.mjs'
 import { fetchAwesomeRepos } from './awesome.mjs'
 import { translateDescriptions } from './translate.mjs'
-import { SEARCH_QUERIES, OUTPUT_PATH, OFFICIAL_OWNER } from './config.mjs'
+import { SEARCH_QUERIES, ALLOWED_TOPICS, OUTPUT_PATH, OFFICIAL_OWNER } from './config.mjs'
 import { categorize } from '../../src/lib/categories.js'
 
 // 产出 schema 校验：不合法直接抛错退出,不覆盖上一次的好数据
@@ -74,7 +74,7 @@ function computeScore(r, fromAwesome) {
   if (topics.includes('dsh-plugin')) s += 20
   if (topics.includes('deepseek-harness')) s += 15
   const text = `${r.fullName} ${r.descriptionOriginal}`.toLowerCase()
-  if (text.includes('deepseek-harness') || /\bdsh\b/.test(text)) s += 15
+  if (text.includes('deepseek-harness') || text.includes('dsh plugin') || text.includes('dsh-plugin')) s += 15
   if (fromAwesome) s += 10
   const starsScore = (Math.log10((r.stars || 0) + 1) / Math.log10(60000)) * 30
   s += starsScore
@@ -83,6 +83,29 @@ function computeScore(r, fromAwesome) {
     if (days < 30) s += 5
   }
   return Math.min(100, Math.round(s))
+}
+
+// 相关性判定：剔除蹭 topic 的非 dsh 生态项目
+// 核心门槛：描述或仓库名必须真的提到 dsh / DeepSeek Harness 上下文
+// (topic 命中只是搜索候选条件,不代表真的属于 dsh 生态)
+function isRelevant(r) {
+  if (r.official) return true
+  const desc = (r.descriptionOriginal || r.description || '').toLowerCase()
+  const name = (r.name || '').toLowerCase()
+  const text = name + ' ' + desc
+  // 强指代：明确提到框架名 或 dsh+插件/皮肤/UI/TUI/运行时等组合
+  const strong =
+    text.includes('deepseek-harness') ||
+    text.includes('deepseek harness') ||
+    text.includes('dsh plugin') ||
+    text.includes('dsh-plugin') ||
+    text.includes('dsh skin') ||
+    text.includes('dsh web') ||
+    text.includes('dsh ui') ||
+    text.includes('dsh tui') ||
+    text.includes('for dsh') ||
+    /\bdsh[- ][a-z]+/.test(text)
+  return strong
 }
 
 function makeInstallCmd(r) {
@@ -95,26 +118,32 @@ async function main() {
   console.log('=== DSH 工坊 每日聚合开始 ===')
   const repoMap = new Map()
 
-  // 1. GitHub 搜索
+  // 1. GitHub 搜索（仅限定 topic）
+  let filteredOut = 0
   for (const q of SEARCH_QUERIES) {
     console.log(`搜索: ${q}`)
     try {
       const items = await searchRepos(q, 50)
       for (const item of items) {
+        // 双保险：仓库 topics 必须命中白名单之一才收录
+        const hitTopic = (item.topics || []).some((t) => ALLOWED_TOPICS.includes(t))
         if (!repoMap.has(item.full_name)) {
-          repoMap.set(item.full_name, normalize(item, 'github-search'))
+          if (hitTopic) {
+            repoMap.set(item.full_name, normalize(item, 'github-search'))
+          } else {
+            filteredOut++
+          }
         }
       }
-      console.log(`  累计 ${repoMap.size} 个`)
+      console.log(`  累计 ${repoMap.size} 个 (过滤 ${filteredOut} 个非白名单)`)
     } catch (e) {
       console.warn(`搜索失败 [${q}]: ${e.message}`)
     }
   }
 
-  // 2. awesome 精选列表
+  // 2. awesome 精选列表（当前为空数组,保留逻辑以支持恢复）
   const awesomeSet = await fetchAwesomeRepos()
   console.log(`awesome 列表共 ${awesomeSet.size} 个候选，补全详情…`)
-  // fetchAwesomeRepos 返回 Map(fullName -> true),遍历其 keys
   let awesomeSkipped = 0
   let awesomeAdded = 0
   try {
@@ -150,6 +179,10 @@ async function main() {
     r.installCmd = makeInstallCmd(r)
     return r
   })
+  // 相关性过滤：剔除蹭 topic 的非 dsh 项目
+  const before = repos.length
+  repos = repos.filter(isRelevant)
+  console.log(`相关性过滤: ${before} → ${repos.length} (剔除 ${before - repos.length} 个非 dsh 生态)`)
 
   // 4. 翻译
   repos = await translateDescriptions(repos)
