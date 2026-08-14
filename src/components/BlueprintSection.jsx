@@ -160,12 +160,12 @@ export default function BlueprintSection() {
   const t = UI[lang].wiki
   const parts = useMemo(() => BLUEPRINT_PARTS[lang], [lang])
 
-  // 默认展开第一个 PART,其余折叠
-  const [openSet, setOpenSet] = useState(() => new Set([parts[0]?.id]))
+  // 默认全部 PART 收拢,点击标题展开
+  const [openSet, setOpenSet] = useState(() => new Set())
 
   // 语言切换时重置(不同语言的 parts 引用不同)
   useEffect(() => {
-    setOpenSet(new Set([parts[0]?.id]))
+    setOpenSet(new Set())
   }, [parts])
 
   return (
