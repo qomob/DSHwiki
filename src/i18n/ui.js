@@ -1,7 +1,7 @@
 // UI 通用文案中英对照
 export const UI = {
   zh: {
-    nav: { wiki: 'Wiki', plugins: '插件收录', ranking: '热力榜', about: '关于' },
+    nav: { wiki: 'Wiki', plugins: '插件', ranking: '热榜', about: '关于' },
     brand: { name: 'DSH 工坊', tagline: '装点你的 Agent' },
     hero: {
       badge: 'DeepSeek Harness 社区镜像',
@@ -37,13 +37,13 @@ export const UI = {
       expand: '展开',
     },
     plugins: {
-      label: '插件收录',
+      label: '插件',
       title: '社区插件一览',
       desc: '从 DeepSeek Harness 生态中挑选值得尝试的项目，按用途归好类。收录范围随社区动态更新，英文简介配有中文说明。',
       newTip: '小提示：dsh 开箱即用，先上手再按需装插件。',
       updateDate: '快照日期',
       categories: '用途分类',
-      ranking: '热力榜 · 星标前五',
+      ranking: '热榜 · 星标前十',
       rankingHint: '按星标',
       searchPlaceholder: '搜插件名、简介、标签…',
       allLangs: '全部语言',
@@ -90,7 +90,7 @@ export const UI = {
     stats: { total: 'Plugins', stars: 'Stars', cats: 'Categories', date: 'Snapshot' },
     wiki: {
       label: 'Wiki',
-      title: 'DSH Chinese getting-started guide',
+      title: 'DSH Manual',
       lead: 'dsh lets AI do more than talk: it can read/write your files, run commands, edit code. This guide follows the learning path — first run a task, then turn repetitive work into your own AI workflow.',
       flow: [
         { step: '01', tag: 'Start', text: 'Install dsh, run your first task' },
@@ -101,19 +101,19 @@ export const UI = {
       chapters: 'chapters',
       ctaTitle: 'Curious about community plugins?',
       ctaDesc: 'Scroll down to browse the collection — each with purpose and install notes.',
-      ctaBtn: 'View plugin library',
+      ctaBtn: 'View Plugins',
       promptLabel: 'Example prompt',
       collapse: 'Collapse',
       expand: 'Expand',
     },
     plugins: {
-      label: 'Plugin Library',
+      label: 'Plugins',
       title: 'Community plugin overview',
       desc: 'A hand-picked set of projects from the DeepSeek Harness ecosystem, sorted by use case. The collection follows community activity; English descriptions come with Chinese notes.',
       newTip: 'Tip: dsh works out of the box — try it first, install plugins as needed.',
       updateDate: 'Snapshot date',
       categories: 'Categories',
-      ranking: 'Top 5 by Stars',
+      ranking: 'Top 10 by Stars',
       rankingHint: 'by stars',
       searchPlaceholder: 'Search name, description, tags…',
       allLangs: 'All languages',
@@ -132,7 +132,7 @@ export const UI = {
       loadedAll: 'All loaded',
     },
     footer: {
-      desc: 'DSH Workshop: a community corner around DeepSeek Harness, keeping notable plugins in one place with a readable getting-started guide. Community-built, not official.',
+      desc: 'DSH Workshop: a community corner around DeepSeek Harness, keeping notable plugins in one place with a readable manual. Community-built, not official.',
       unofficial: 'Community-maintained, no affiliation with DeepSeek AI. Repos and trademarks belong to their owners.',
       nav: 'Navigation',
       resources: 'Resources',

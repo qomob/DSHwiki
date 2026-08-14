@@ -56,7 +56,7 @@ export default function HubSection() {
   }, [cat, selLang, query, sort])
 
   const topRepos = useMemo(
-    () => [...repos].sort((a, b) => b.stars - a.stars).slice(0, 5),
+    () => [...repos].sort((a, b) => b.stars - a.stars).slice(0, 10),
     [],
   )
 
@@ -173,7 +173,7 @@ export default function HubSection() {
               {t.showing} <span className="font-mono text-fg-secondary">{filtered.length}</span> {t.of} {repos.length} {t.plugins}
             </div>
 
-            {/* 热力榜横条（Top 5） */}
+            {/* 热榜横条（Top 10） */}
             <div id="ranking" className="mt-5 scroll-mt-20 rounded-[14px] border border-border-subtle bg-surface-2/60 p-4">
               <div className="flex items-center gap-2">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg-muted">
