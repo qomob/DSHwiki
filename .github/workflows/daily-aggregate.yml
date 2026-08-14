@@ -72,7 +72,7 @@ jobs:
         if: steps.git_diff.outputs.changed == 'true' || github.event.inputs.force_deploy == 'true'
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avz --delete
+          switches: -avz --delete --exclude=.user.ini
           path: dist/
           remote_path: ${{ secrets.DEPLOY_PATH }}
           remote_host: ${{ secrets.SSH_HOST }}
