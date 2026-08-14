@@ -52,7 +52,8 @@ export async function getRepo(owner, repo) {
   }
 }
 
-// awesome 补全专用：限流立即抛错,不等待 reset(避免 550 个候选逐个卡死)
+// awesome 补全专用：限流时等待 reset 后重试,而不是短路放弃
+// 只有 reset 头缺失/非法(无法计算等待)才停止——避免一次抖动丢掉全部 awesome
 export async function getRepoNoRetry(owner, repo) {
   try {
     return await ghFetchNoRetry(`https://api.github.com/repos/${owner}/${repo}`)
@@ -63,11 +64,22 @@ export async function getRepoNoRetry(owner, repo) {
   }
 }
 
-async function ghFetchNoRetry(url) {
+async function ghFetchNoRetry(url, attempt = 0) {
   const res = await fetch(url, { headers: HEADERS })
   if (res.status === 403 || res.status === 429) {
     const remain = res.headers.get('x-ratelimit-remaining')
-    throw new Error(`GitHub 限流 (remaining=${remain}, 无重试)`)
+    const reset = res.headers.get('x-ratelimit-reset')
+    const resetValid = reset && Number(reset) > 0 && Number.isFinite(Number(reset))
+    // 配额真的耗尽(reset 有效):等待至重置后重试(最多 2 次)
+    if (remain === '0' && resetValid && attempt < 2) {
+      const wait = Math.max(0, Number(reset) * 1000 - Date.now()) + 1000
+      console.warn(`GitHub 限流等待 ${Math.round(wait / 1000)}s (awesome 补全, 重试 ${attempt + 1}/2)…`)
+      await sleep(Math.min(wait, 1000 * 60 * 10))
+      return ghFetchNoRetry(url, attempt + 1)
+    }
+    // reset 非法或已达重试上限:停止(不影响已补全的)
+    const reason = !resetValid ? 'reset 头缺失/非法' : '已达重试上限'
+    throw new Error(`GitHub 限流 (remaining=${remain}, ${reason})`)
   }
   if (!res.ok) throw new Error(`GitHub ${res.status}: ${url}`)
   return res.json()
