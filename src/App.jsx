@@ -20,8 +20,8 @@ export default function App() {
       <main>
         <Hero />
         <StatsBar stats={safeData.stats} generatedAt={safeData.generatedAt} />
-        <BlueprintSection />
         <HubSection />
+        <BlueprintSection />
       </main>
       <Footer />
     </div>

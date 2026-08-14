@@ -35,14 +35,14 @@ export default function Hero() {
             <p className="mt-3 text-xs text-fg-dim">{t.hero.unofficial}</p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a href="#blueprint" className="ds-btn-primary inline-flex items-center gap-2">
-                {t.hero.ctaWiki}
+              <a href="#plugins" className="ds-btn-primary inline-flex items-center gap-2">
+                {t.hero.ctaPlugins}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
               </a>
-              <a href="#plugins" className="ds-btn-secondary inline-flex items-center gap-2">
-                {t.hero.ctaPlugins}
+              <a href="#blueprint" className="ds-btn-secondary inline-flex items-center gap-2">
+                {t.hero.ctaWiki}
               </a>
             </div>
 

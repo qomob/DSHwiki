@@ -20,7 +20,7 @@ export const UI = {
     stats: { total: '收录插件', stars: '累计星标', cats: '用途分类', date: '数据快照' },
     wiki: {
       label: 'Wiki',
-      title: 'DSH 中文入门手册',
+      title: 'DSH手册',
       lead: 'dsh 让 AI 不再只动嘴：它能读写你的文件、跑命令、改代码。这份手册按上手路径编排——先跑通一个任务，再把重复劳动沉淀成你的 AI 工作流。',
       flow: [
         { step: '01', tag: '起步', text: '装好 dsh，跑通第一个任务' },

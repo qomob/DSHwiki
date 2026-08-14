@@ -9,8 +9,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false)
 
   const navItems = [
-    { href: '#blueprint', label: t.nav.wiki },
     { href: '#plugins', label: t.nav.plugins },
+    { href: '#blueprint', label: t.nav.wiki },
     { href: '#ranking', label: t.nav.ranking },
     { href: '#about', label: t.nav.about },
   ]
