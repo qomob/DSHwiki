@@ -73,7 +73,8 @@ jobs:
         # 锁定到精确 SHA，防止 action 作者更新 tag 后注入恶意代码
         uses: burnett01/rsync-deployments@796cf0d5e4b535745ce49d7429f77cf39e25ef39
         with:
-          switches: -avz --delete --exclude=.user.ini
+          # deploy 用户推送; --chmod 确保 Nginx(www) 可读; 排除宝塔锁定文件
+          switches: -avz --delete --exclude=.user.ini --chmod=F644,D755
           path: dist/
           remote_path: ${{ secrets.DEPLOY_PATH }}
           remote_host: ${{ secrets.SSH_HOST }}
