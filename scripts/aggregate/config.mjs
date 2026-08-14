@@ -15,8 +15,13 @@ export const SEARCH_QUERIES = [
 // 允许的 topic 白名单：仓库必须命中其一才收录（双保险过滤）
 export const ALLOWED_TOPICS = ['dsh-plugin', 'dsh', 'deepseek-harness']
 
-// 融合的 awesome 精选列表已停用（范围过大），如需恢复可重新启用
-export const AWESOME_SOURCES = []
+// 融合的 awesome 精选列表（README 中提取仓库链接）
+// 注意：awesome 补全的仓库同样经过 topic 白名单 + 相关性过滤,不会失控
+export const AWESOME_SOURCES = [
+  { repo: '0xsline/awesome-deepseek-harness', branch: 'main' },
+  { repo: 'awesome-dsh-plugin/awesome-dsh-plugin', branch: 'main' },
+  { repo: 'AdamPlatin123/awesome-dsh-plugins', branch: 'main' },
+]
 
 export const OFFICIAL_OWNER = 'deepseek-ai'
 export const OFFICIAL_REPO = 'deepseek-ai/deepseek-harness'

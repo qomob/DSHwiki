@@ -1,7 +1,7 @@
 // DSH 工坊 每日聚合主流程
 // 1. GitHub Search API(topic 限定) 2. 去重 3. 相关度评分 4. 分类 5. 翻译 6. 输出 repos.json
 import { writeFileSync } from 'node:fs'
-import { searchRepos, getRepo, RateLimitError } from './github.mjs'
+import { searchRepos, getRepoNoRetry, RateLimitError } from './github.mjs'
 import { fetchAwesomeRepos } from './awesome.mjs'
 import { translateDescriptions } from './translate.mjs'
 import { SEARCH_QUERIES, ALLOWED_TOPICS, OUTPUT_PATH, OFFICIAL_OWNER } from './config.mjs'
@@ -141,11 +141,12 @@ async function main() {
     }
   }
 
-  // 2. awesome 精选列表（当前为空数组,保留逻辑以支持恢复）
+  // 2. awesome 精选列表（补全的仓库同样经过 topic 白名单过滤）
   const awesomeSet = await fetchAwesomeRepos()
   console.log(`awesome 列表共 ${awesomeSet.size} 个候选，补全详情…`)
   let awesomeSkipped = 0
   let awesomeAdded = 0
+  let awesomeFiltered = 0
   try {
     for (const full of awesomeSet.keys()) {
       if (repoMap.has(full)) {
@@ -153,10 +154,16 @@ async function main() {
         continue
       }
       const [owner, repo] = full.split('/')
-      const item = await getRepo(owner, repo)
+      const item = await getRepoNoRetry(owner, repo)
       if (item) {
-        repoMap.set(full, normalize(item, 'awesome-list'))
-        awesomeAdded++
+        // 双保险：awesome 补全的仓库也必须命中 topic 白名单
+        const hitTopic = (item.topics || []).some((t) => ALLOWED_TOPICS.includes(t))
+        if (hitTopic) {
+          repoMap.set(full, normalize(item, 'awesome-list'))
+          awesomeAdded++
+        } else {
+          awesomeFiltered++
+        }
       }
     }
   } catch (e) {
@@ -167,8 +174,10 @@ async function main() {
       throw e
     }
   }
-  if (awesomeSkipped > 0) {
-    console.log(`awesome 补全完成: 新增 ${awesomeAdded}, 因配额跳过 ${awesomeSkipped}`)
+  if (awesomeSkipped > 0 || awesomeFiltered > 0) {
+    console.log(`awesome 补全完成: 新增 ${awesomeAdded}, 过滤 ${awesomeFiltered} 个非白名单, 因配额跳过 ${awesomeSkipped}`)
+  } else if (awesomeAdded > 0) {
+    console.log(`awesome 补全完成: 新增 ${awesomeAdded} 个`)
   }
 
   // 3. 分类 + 评分 + 安装命令

@@ -41,7 +41,10 @@ jobs:
         id: aggregate
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          # 翻译：兼容 OpenAI 协议的任何 LLM API(默认 DeepSeek)
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY || secrets.DEEPSEEK_API_KEY }}
+          LLM_API_BASE: ${{ secrets.LLM_API_BASE }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL }}
         run: npm run aggregate
 
       - name: 聚合失败时用现有数据继续

@@ -52,6 +52,27 @@ export async function getRepo(owner, repo) {
   }
 }
 
+// awesome 补全专用：限流立即抛错,不等待 reset(避免 550 个候选逐个卡死)
+export async function getRepoNoRetry(owner, repo) {
+  try {
+    return await ghFetchNoRetry(`https://api.github.com/repos/${owner}/${repo}`)
+  } catch (e) {
+    if (/限流/.test(e.message)) throw new RateLimitError(e.message)
+    console.warn(`获取仓库失败 ${owner}/${repo}: ${e.message}`)
+    return null
+  }
+}
+
+async function ghFetchNoRetry(url) {
+  const res = await fetch(url, { headers: HEADERS })
+  if (res.status === 403 || res.status === 429) {
+    const remain = res.headers.get('x-ratelimit-remaining')
+    throw new Error(`GitHub 限流 (remaining=${remain}, 无重试)`)
+  }
+  if (!res.ok) throw new Error(`GitHub ${res.status}: ${url}`)
+  return res.json()
+}
+
 // 限流耗尽标记：外层循环捕获后停止补全，避免逐仓库等 reset
 export class RateLimitError extends Error {
   constructor(message) {

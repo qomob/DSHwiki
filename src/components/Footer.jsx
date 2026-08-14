@@ -50,7 +50,17 @@ export default function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-border-subtle pt-6 text-xs text-fg-dim sm:flex-row">
           <span>{t.footer.source}</span>
-          <span>{t.footer.motto}</span>
+          <a
+            href="https://www.deepseek.com/harness/"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 transition-colors hover:text-fg"
+          >
+            DeepSeek Harness
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M7 17L17 7M9 7h8v8" />
+            </svg>
+          </a>
         </div>
         <div className="mt-3 text-center text-xs text-fg-dim">
           开源 · MIT · © 2026 Qomob.AI
