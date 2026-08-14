@@ -56,6 +56,12 @@ jobs:
           echo "⚠️ 聚合脚本失败（可能是 GitHub API 限流），使用现有 repos.json 继续构建部署"
           echo "当前 repos.json 仓库数: $(node -e "console.log(require("./src/data/repos.json").repos.length)")"
 
+      - name: 诊断翻译配置
+        run: |
+          echo "LLM_API_KEY 已设置: $([ -n "$LLM_API_KEY" ] && echo YES || echo NO)"
+          echo "LLM_API_BASE: ${LLM_API_BASE:-default-deepseek}"
+          echo "LLM_MODEL: ${LLM_MODEL:-default-deepseek-chat}"
+
       - name: 检测数据变化
         id: git_diff
         run: |
