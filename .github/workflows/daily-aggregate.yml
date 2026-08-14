@@ -1,0 +1,60 @@
+name: 每日聚合 dsh 生态
+
+# 每天北京时间 08:00 自动聚合，也支持手动触发
+on:
+  schedule:
+    - cron: '0 0 * * *' # UTC 00:00 = 北京时间 08:00
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-aggregate
+  cancel-in-progress: false
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 运行聚合脚本
+        env:
+          # GitHub Token：建议用 PAT 以提高搜索限额到 5000/小时；未配置则用匿名 60/小时
+          GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+          # DeepSeek API Key：用于把外文简介翻译为中文；未配置则保留原文
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: npm run aggregate
+
+      - name: 提交聚合数据
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet src/data/repos.json; then
+            echo "数据无变化，跳过提交"
+          else
+            git add src/data/repos.json
+            git commit -m "chore(data): 每日聚合 dsh 生态 $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      - name: 构建前端验证
+        run: npm run build
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7

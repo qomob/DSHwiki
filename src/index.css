@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+/* 对齐 DeepSeek Harness 官方页面设计 token */
+@theme {
+  /* 背景与表面 —— 纯黑底 + 白色多级透明度叠加 */
+  --color-bg: #0a0a0a;
+  --color-surface-1: rgba(255, 255, 255, 0.06);
+  --color-surface-2: rgba(255, 255, 255, 0.04);
+  --color-surface-3: rgba(255, 255, 255, 0.02);
+  --color-surface-raised: rgba(255, 255, 255, 0.12);
+  --color-overlay: #262626;
+
+  /* 文字 —— 白色多级透明度 */
+  --color-fg: #ffffff;
+  --color-fg-secondary: rgba(255, 255, 255, 0.8);
+  --color-fg-muted: rgba(255, 255, 255, 0.5);
+  --color-fg-dim: rgba(255, 255, 255, 0.3);
+
+  /* 边框 —— 白色透明度阶 */
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-secondary: rgba(255, 255, 255, 0.2);
+  --color-border-hover: rgba(255, 255, 255, 0.2);
+
+  /* 品牌色（官方几乎不用，仅强调） */
+  --color-brand: #6799fe;
+  --color-brand-soft: rgba(103, 153, 254, 0.14);
+
+  /* 代码背景 */
+  --color-code-bg: rgba(0, 0, 0, 0.35);
+
+  /* 字体 —— 对齐官方 DM Sans / Host Grotesk / Fragment Mono */
+  --font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", sans-serif;
+  --font-display: "Host Grotesk", system-ui, sans-serif;
+  --font-mono: "Fragment Mono", "Roboto Mono", ui-monospace, monospace;
+
+  /* 圆角 —— 对齐官方 token */
+  --radius-sm: 8px;
+  --radius-input: 10px;
+  --radius-media: 10px;
+  --radius-panel: 16px;
+  --radius-card: 24px;
+  --radius-pill: 100px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+/* 滚动条 —— 单色克制 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 官方卡片高光：顶部一道细高光内阴影 */
+.ds-card-highlight {
+  box-shadow: hsla(0, 0%, 100%, 0.12) 0px 1px 0px 0px inset;
+}
+
+/* 官方玻璃模糊 */
+.ds-glass {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* 官方渐变描边标签（135° 白色渐变） */
+.ds-gradient-border {
+  position: relative;
+  background: var(--color-bg);
+}
+.ds-gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.08) 35%, rgba(255, 255, 255, 0.04) 65%, rgba(255, 255, 255, 0.5) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* 卡片 hover —— 微妙提亮 */
+.ds-card-hover {
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.ds-card-hover:hover {
+  background: var(--color-surface-1);
+  border-color: var(--color-border-hover);
+}
+
+/* 胶囊主按钮（白底黑字） */
+.ds-btn-primary {
+  background: #fff;
+  color: #0a0a0a;
+  border-radius: var(--radius-pill);
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+.ds-btn-primary:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* 胶囊次按钮（玻璃底白字） */
+.ds-btn-secondary {
+  background: var(--color-surface-1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-pill);
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.ds-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 代码块 —— 官方玻璃代码卡 */
+.ds-code-block {
+  border-radius: var(--radius-media);
+  border: 1px solid var(--color-border-subtle);
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* fade in */
+.fade-in {
+  animation: fadeIn 0.5s ease both;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
