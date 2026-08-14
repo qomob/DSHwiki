@@ -41,48 +41,51 @@ function PartBlock({ part, t, defaultOpen }) {
 
   return (
     <div key={part.id} id={part.id}>
-      {/* PART 标题——可点击折叠/展开 */}
+      {/* PART 标题条——收拢时紧凑单行,展开时显示完整描述 */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="grid w-full cursor-pointer gap-6 text-left lg:grid-cols-[260px_1fr]"
+        className="w-full cursor-pointer text-left"
         aria-expanded={open}
       >
-        <div className="lg:sticky lg:top-24 lg:self-start">
-          <div className="h-px w-10" style={{ background: part.accent }} />
-          <div className="mt-3 font-mono text-xs font-medium tracking-wider text-fg-dim">{part.label}</div>
-          <h3 className="mt-1 text-lg font-medium text-fg sm:text-xl">{part.title}</h3>
-          <p className="mt-2 text-sm leading-relaxed text-fg-muted">{part.desc}</p>
-          <div className="mt-3 inline-flex items-center gap-1.5 rounded-pill border border-border-subtle bg-surface-2 px-2.5 py-1 text-[11px] text-fg-dim">
-            <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: part.accent }} />
-            {part.chapters.length} {t.chapters}
+        {/* 收拢态:紧凑一行 */}
+        <div className="flex items-center justify-between gap-3 rounded-[10px] border border-border-subtle bg-surface-2 px-4 py-3 transition-colors hover:bg-surface-1">
+          <div className="flex min-w-0 items-center gap-3">
+            <span
+              className="shrink-0 font-mono text-xs font-medium tracking-wider"
+              style={{ color: part.accent }}
+            >
+              {part.label}
+            </span>
+            <span className="truncate text-sm font-medium text-fg">{part.title}</span>
+            <span className="hidden shrink-0 items-center gap-1.5 rounded-pill border border-border-subtle bg-surface-1 px-2 py-0.5 text-[11px] text-fg-dim sm:inline-flex">
+              {part.chapters.length} {t.chapters}
+            </span>
           </div>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className={`shrink-0 text-fg-dim transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
         </div>
 
-        {/* 折叠指示器 */}
-        <div className="hidden items-start justify-end lg:flex">
-          <span className="inline-flex items-center gap-1.5 rounded-pill border border-border-subtle bg-surface-2 px-3 py-1.5 text-xs text-fg-muted">
-            {open ? t.collapse : t.expand}
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              className={`transition-transform ${open ? '' : 'rotate-180'}`}
-            >
-              <path d="M6 9l6 6 6-6" />
-            </svg>
-          </span>
-        </div>
+        {/* 展开态:完整描述 */}
+        {open && (
+          <div className="mt-3 rounded-[10px] border border-border-subtle bg-surface-1/50 px-4 py-3">
+            <p className="text-sm leading-relaxed text-fg-muted">{part.desc}</p>
+          </div>
+        )}
       </button>
 
-      {/* 章节卡片——折叠时隐藏 */}
+      {/* 章节卡片——展开时显示 */}
       {open && (
-        <div className="mt-8 grid gap-4 lg:grid-cols-[260px_1fr]">
-          <div />
-          <div className="grid gap-4 sm:grid-cols-2">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {part.chapters.map((ch) => {
               const dividerIdx = ch.points.findIndex((p) => /^——/.test(p))
               const hasDivider = dividerIdx !== -1
@@ -149,7 +152,6 @@ function PartBlock({ part, t, defaultOpen }) {
               )
             })}
           </div>
-        </div>
       )}
     </div>
   )
