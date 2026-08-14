@@ -1,8 +1,8 @@
 <div align="center">
 
-<h1>DSH Wiki · 一切皆插件</h1>
+<h1>DSH 工坊 · 装点你的 Agent</h1>
 
-<p>围绕 <a href="https://github.com/deepseek-ai/deepseek-harness">DeepSeek Harness (dsh)</a> 的中文社区站</p>
+<p>围绕 <a href="https://github.com/deepseek-ai/deepseek-harness">DeepSeek Harness (dsh)</a> 的中文社区角落</p>
 
 <p>
   <a href="https://github.com/deepseek-ai/deepseek-harness"><img src="https://img.shields.io/badge/dsh-Agent%20Framework-6799fe" alt="dsh" /></a>
@@ -23,10 +23,10 @@
 
 ---
 
-两条主线，一个站点：
+两个栏目，一个站点：
 
-- **Wiki 教程** — 原创中文教程，结合真实 Web UI，四段路径（上手 → 案例 → 进阶 → 落地）带你从 0 到 1 精通「一切皆插件」的 Agent 框架。章节可折叠、含可复制对话示例。
-- **DSH 插件目录** — 每日通过 GitHub 官方接口聚合 dsh 生态仓库，融合 awesome 精选列表，去重 + 相关度评分后上架；外文简介自动翻译为中文，悬停可看原文。
+- **入门手册（Wiki）** — 按上手路径编排的中文教程：先跑通任务，再把重复劳动沉淀成自己的 AI 工作流。章节可折叠、含可复制的对话示例。
+- **插件收录库** — 从 DeepSeek Harness 生态里挑出值得尝试的项目，按用途分类陈列，每件标注安装方式；英文简介配中文说明。
 
 ## ✨ 特性
 
@@ -301,6 +301,6 @@ npm test && npm run lint && npm run build   # 确保全绿再提交
 
 **MIT License · © 2026 Qomob.AI**
 
- Built in public · 一切皆插件
+ Build in public · 装点你的 Agent
 
 </div>

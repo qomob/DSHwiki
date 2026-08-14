@@ -99,7 +99,7 @@ scp -r dist/* root@你的服务器IP:/www/wwwroot/dsh-wiki/
 
 ### 3.4 验证
 
-浏览器访问 http://你的域名或IP，应看到 DSH Wiki 首页。
+浏览器访问 http://你的域名或IP，应看到 DSH 工坊首页。
 
 ---
 
