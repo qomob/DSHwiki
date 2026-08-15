@@ -2,11 +2,48 @@ import { useEffect, useState } from 'react'
 import { useLang } from '../i18n/LanguageContext.jsx'
 import { UI } from '../i18n/ui.js'
 
+// 社群菜单：桌面 hover 弹出微信二维码；点击同样可切换（触屏兜底）。
+function CommunityPopover({ show, onHover, onToggle }) {
+  const { lang } = useLang()
+  const t = UI[lang].nav
+  const hint = lang === 'zh' ? '微信扫码加入社群' : 'Scan to join the WeChat group'
+  return (
+    <div className="relative" onMouseEnter={onHover(true)} onMouseLeave={onHover(false)}>
+      <a
+        href="#community"
+        onClick={(e) => {
+          e.preventDefault()
+          onToggle()
+        }}
+        className="inline-block rounded-[8px] px-3 py-2 text-sm text-fg-muted transition-colors hover:bg-surface-1 hover:text-fg"
+        aria-haspopup="true"
+        aria-expanded={show}
+      >
+        {t.community}
+      </a>
+      {show && (
+        <div className="absolute right-0 top-full z-40 mt-2 w-44 rounded-[12px] border border-border-subtle bg-surface-2 p-3 text-center shadow-lg">
+          <img
+            src="/wechat.jpg"
+            alt={hint}
+            width={140}
+            height={140}
+            className="mx-auto h-[140px] w-[140px] rounded-[8px]"
+            loading="lazy"
+          />
+          <p className="mt-2 text-xs text-fg-muted">{hint}</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function Navbar() {
   const { lang, toggle } = useLang()
   const t = UI[lang]
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const [communityOpen, setCommunityOpen] = useState(false)
 
   const navItems = [
     { href: '#plugins', label: t.nav.plugins },
@@ -21,6 +58,9 @@ export default function Navbar() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  const hover = (v) => () => setCommunityOpen(v)
+  const toggleCommunity = () => setCommunityOpen((v) => !v)
 
   return (
     <header
@@ -39,6 +79,7 @@ export default function Navbar() {
           </span>
         </a>
 
+        {/* 桌面导航：页面锚点 + 社群 hover 弹层 */}
         <div className="hidden items-center gap-1 md:flex">
           {navItems.map((it) => (
             <a
@@ -49,6 +90,7 @@ export default function Navbar() {
               {it.label}
             </a>
           ))}
+          <CommunityPopover show={communityOpen} onHover={hover} onToggle={toggleCommunity} />
         </div>
 
         <div className="flex items-center gap-2">
@@ -84,6 +126,7 @@ export default function Navbar() {
         </div>
       </nav>
 
+      {/* 移动端菜单：锚点 + 社群（点击展开二维码，复用同一组件） */}
       {open && (
         <div className="border-t border-border-subtle bg-bg/95 px-5 py-3 md:hidden">
           {navItems.map((it) => (
@@ -96,6 +139,9 @@ export default function Navbar() {
               {it.label}
             </a>
           ))}
+          <div className="mt-1">
+            <CommunityPopover show={communityOpen} onHover={hover} onToggle={toggleCommunity} />
+          </div>
         </div>
       )}
     </header>

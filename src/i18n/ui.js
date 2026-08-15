@@ -1,7 +1,7 @@
 // UI 通用文案中英对照
 export const UI = {
   zh: {
-    nav: { wiki: 'Wiki', plugins: '插件', ranking: '热榜', about: '关于' },
+    nav: { wiki: 'Wiki', plugins: '插件', ranking: '热榜', about: '关于', community: '社群' },
     brand: { name: 'DSH 工坊', tagline: '一切皆为插件，即刻装备你的DSH' },
     hero: {
       badge: 'DeepSeek Harness 社区镜像',
@@ -83,7 +83,7 @@ export const UI = {
     },
   },
   en: {
-    nav: { wiki: 'Wiki', plugins: 'Plugins', ranking: 'Top', about: 'About' },
+    nav: { wiki: 'Wiki', plugins: 'Plugins', ranking: 'Top', about: 'About', community: 'Community' },
     brand: { name: 'DSH Workshop', tagline: 'Everything is a plugin — equip your DSH now' },
     hero: {
       badge: 'DeepSeek Harness Community',

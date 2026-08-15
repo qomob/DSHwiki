@@ -4,6 +4,12 @@ const LanguageContext = createContext()
 
 const SUPPORTED = ['zh', 'en']
 
+// SEO titles per language — the browser tab reflects the UI language.
+const SEO_TITLES = {
+  zh: 'DSH · DeepSeek Harness 手册与插件库',
+  en: 'DSH · DeepSeek Harness Manual & Plugin Library',
+}
+
 function detect() {
   if (typeof window === 'undefined') return 'zh'
   const saved = localStorage.getItem('dsh-lang')
@@ -18,6 +24,12 @@ export function LanguageProvider({ children }) {
   useEffect(() => {
     setLang(detect())
   }, [])
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.title = SEO_TITLES[lang] || SEO_TITLES.zh
+    }
+  }, [lang])
 
   const change = (l) => {
     setLang(l)
