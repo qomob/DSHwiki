@@ -22,6 +22,21 @@ try {
   previous = null // first bootstrap or unreadable — fall back per repo
 }
 
+// First-seen bookkeeping with honest semantics:
+//   · no previous snapshot (catalog bootstrap) → OMIT firstSeenAt entirely:
+//     the catalog's birth date is not each repo's first-seen date, so nothing
+//     may claim to be "new".
+//   · previous entry exists with firstSeenAt → preserve it.
+//   · previous entry exists WITHOUT firstSeenAt (pre-tracking legacy entry)
+//     → keep omitting it: we don't know the real first-seen date.
+//   · previous entry absent → genuinely newly collected today → record today.
+function firstSeenOf(r, generatedAt) {
+  if (previous === null) return undefined
+  const prev = previous.get(r.fullName)
+  if (prev !== undefined) return prev.firstSeenAt
+  return generatedAt
+}
+
 // Compact a repos.json entry to the fields the plugin actually serves.
 function project(r, generatedAt) {
   const entry = {
@@ -36,10 +51,8 @@ function project(r, generatedAt) {
     installCmd: r.installCmd || '',
     url: r.url,
   }
-  // First-seen bookkeeping: keep the recorded date, else the repo's last
-  // update as a conservative bootstrap, else the snapshot date.
-  const prev = previous?.get(r.fullName)
-  entry.firstSeenAt = prev?.firstSeenAt || r.updatedAt || generatedAt
+  const firstSeenAt = firstSeenOf(r, generatedAt)
+  if (firstSeenAt !== undefined) entry.firstSeenAt = firstSeenAt
   if (r.translated && r.description && r.description !== r.descriptionOriginal) {
     entry.descriptionZh = r.description
   }

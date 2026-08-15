@@ -488,7 +488,11 @@ function PluginCard({ entry, installedPhase, expanded, onToggleExpanded, onTopic
           </span>
         ) : null}
         <span style={css.dim}>★ {formatStars(entry.stars ?? 0)}</span>
-        {when ? <span style={css.dim}>{when}</span> : null}
+        {when ? (
+          <span style={css.dim} title={`最后更新 ${entry.updatedAt ? String(entry.updatedAt).slice(0, 10) : ''}`}>
+            更新 {when}
+          </span>
+        ) : null}
         {entry.language ? (
           <span style={css.langWrap}>
             <span style={{ ...css.langDot, background: langColor || 'var(--dsw-alias-border-l2)' }} />
