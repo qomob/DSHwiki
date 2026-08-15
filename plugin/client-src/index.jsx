@@ -26,6 +26,7 @@ import {
   IconCordisPluginOutline14,
   IconChevronDownOutline14,
   IconWarningOutline16,
+  IconBranchOutline16,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import registryData from '../data/registry.json'
 
@@ -897,6 +898,17 @@ export function HubView({ listInstalled }) {
               <span>·</span>
               <a style={{ color: 'inherit' }} href="https://dsh.qomob.ai" target="_blank" rel="noreferrer">
                 DSH 工坊 ↗
+              </a>
+              <span>·</span>
+              <a
+                style={{ color: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                href="https://github.com/qomob/dsh"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="GitHub 仓库 qomob/dsh"
+              >
+                <IconBranchOutline16 size={11} />
+                qomob/dsh
               </a>
             </div>
           </div>
