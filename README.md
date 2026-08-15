@@ -23,10 +23,11 @@
 
 ---
 
-两个栏目，一个站点：
+两个栏目，一个站点，外加一个可安装的 dsh 插件：
 
 - **插件库** — 从 DeepSeek Harness 生态里挑出值得尝试的项目，按用途分类陈列（左侧分类侧边栏），每件标注安装方式；英文简介配中文说明。
 - **DSH手册** — 按上手路径编排的中文教程：先跑通任务，再把重复劳动沉淀成自己的 AI 工作流。章节可折叠、含可复制的对话示例。
+- **dsh-plugin-hub 插件** — [`plugin/`](plugin/) 目录是一个完整的 dsh 组合包（bundle）：装进任意 dsh 后，agent 获得 `plugin_search` / `plugin_info` / `plugin_install` 三个工具（发现 → 核验 → 审批安装闭环），Web UI 会话视图新增「插件」tab 目录浏览页。详见 [`plugin/README.md`](plugin/README.md)。
 
 ## ✨ 特性
 
@@ -38,6 +39,25 @@
 - **无额外依赖** — 聚合脚本仅用 Node 18+ 内置 `fetch`；测试用 Node 内置 test runner
 - **中英双语** — UI 与教程内容均支持中英切换，语言偏好本地持久化
 - **对齐官方设计** — `#0a0a0a` 黑底 + 白色透明度体系 + DM Sans，视觉与 deepseek.com/harness 一致
+
+---
+
+## dsh-plugin-hub 插件
+
+[`plugin/`](plugin/) 把本站的插件聚合能力做成了任何 dsh 用户都能安装的组合包（纯 JavaScript ESM、无构建步骤、无需 pnpm 构建授权）：
+
+```bash
+dsh plugin --profile myhub add "github:qomob/DSHwiki#path:/plugin"
+dsh --profile myhub
+# 然后对 agent 说：「用 plugin_search 找一个 dsh 桌面通知插件」
+```
+
+- **`plugin_search`** — 关键词 / 分类检索 dsh 社区插件（离线内嵌快照 328+ 插件 + 每日运行时自动刷新，可选 live GitHub 搜索），返回安装命令
+- **`plugin_info`** — 单个插件仓库详情 + 安装核验（manifest 事实、构建脚本风险、monorepo 子目录提示）
+- **`plugin_install`** — 代理安装：核验目标 → 经 Web UI 交互审批（无审批服务时需显式 confirm）→ 执行 `dsh plugin add`，pnpm 授权失败给 allowBuilds 修复提示
+- **「插件」tab** — 会话视图环（对话 / 轨迹 / 插件）：目录浏览、搜索、分类、复制安装命令；离线可用、在线自动刷新、主题跟随
+
+数据每日自动更新：CI 每天 08:00（北京时间）采集新插件并刷新 `plugin/data/registry.json` 与 `plugin/client.js`；已安装的插件每 24 小时后台拉取最新快照（失败静默保留现快照），无需重装。配置项（GitHub Token、镜像、条数、超时、刷新/安装开关等）与开发说明见 [`plugin/README.md`](plugin/README.md)。
 
 ---
 
@@ -263,6 +283,13 @@ location = /index.html {                # 入口不缓存
 │   ├── awesome.mjs            # awesome 列表 README 提取
 │   ├── translate.mjs          # LLM 翻译（OpenAI 兼容，可降级）
 │   └── aggregate.mjs          # 主流程（含去重/过滤/schema 校验）
+├── plugin/                    # dsh-plugin-hub：可安装的 dsh 组合包
+│   ├── index.js               # 插件入口（Config + 两个 defineTool 工具）
+│   ├── cordis.patch.yml       # bundle 层（package.json 的 dsh.bundle 指向它）
+│   ├── src/                   # categories / registry / live / refresh / format
+│   ├── data/registry.json     # 内嵌插件快照（CI 每日刷新 + 运行时每日自动拉取）
+│   ├── tests/                 # 27 个单元测试（node:test，无网络）
+│   └── smoke/                 # 端到端冒烟（真实 cordis + dsh-tools 管线）
 ├── tests/unit.test.mjs        # 纯函数单测（27 个用例）
 ├── public/                    # 静态资源
 │   ├── favicon.svg

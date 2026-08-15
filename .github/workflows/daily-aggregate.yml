@@ -8,6 +8,7 @@ on:
     branches: [main] # 推送 main 时自动聚合 + 构建部署
     paths-ignore:
       - 'src/data/repos.json'
+      - 'plugin/data/registry.json' # 本工作流自身的快照提交，避免递归触发
   workflow_dispatch:
     inputs:
       force_deploy:
@@ -67,16 +68,27 @@ jobs:
           echo "⚠️ 聚合脚本失败（可能是 GitHub API 限流），使用现有 repos.json 继续构建部署"
           echo "当前 repos.json 仓库数: $(node -e "console.log(require("./src/data/repos.json").repos.length)")"
 
+      - name: 同步插件内嵌快照（dsh-plugin-hub）
+        continue-on-error: true
+        run: |
+          node plugin/scripts/sync-registry.mjs
+          # 重建 Web UI「插件」tab 的内嵌快照副本（client.js 产物随源提交）
+          npx pnpm install --dir plugin --store-dir .tmp-pnpm-store
+          npm run build-client --prefix plugin
+          # 渲染门禁：SSR 渲染 + primitives 符号存在性审计（防 undefined 组件迟发崩溃）
+          node --import ./plugin/scripts/render-hooks.mjs plugin/scripts/render-check.mjs
+          rm -rf .tmp-pnpm-store
+
       - name: 检测数据变化
         id: git_diff
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet src/data/repos.json; then
+          if git diff --quiet src/data/repos.json plugin/data/registry.json plugin/client.js; then
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "数据无变化"
           else
-            git add src/data/repos.json
+            git add src/data/repos.json plugin/data/registry.json plugin/client.js
             git commit -m "chore(data): 每日聚合 dsh 生态 $(date -u +%Y-%m-%d)"
             git push || echo "push 失败（可能是 token 权限不足，不影响后续构建部署）"
             echo "changed=true" >> $GITHUB_OUTPUT

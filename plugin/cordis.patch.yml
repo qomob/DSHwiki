@@ -1,0 +1,19 @@
+# dsh-plugin-hub — bundle layer
+#
+# Applied when a profile lists this bundle. Inserts one plugin row that mounts
+# the plugin_search / plugin_info tools. The row references this package by
+# name so Node module resolution finds the installed code inside the profile.
+#
+# Users can override the row in their own profile cordis.patch.yml, e.g.:
+#
+#   - id: plugin-hub
+#     name: dsh-plugin-hub
+#     config:
+#       githubToken: ghp_xxx
+#       maxResults: 12
+#
+# Remember: a patch replaces the row's whole config value — omitted keys fall
+# back to the schema defaults declared in the plugin's Config.
+- insert:
+    - id: plugin-hub
+      name: dsh-plugin-hub
