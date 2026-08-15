@@ -1,0 +1,16 @@
+{
+  "sponsors": [
+    {
+      "id": "example-sponsor",
+      "name": "example-plugin",
+      "desc": {
+        "zh": "示例赞助位条目（已过期，仅作数据结构参考，不会展示）",
+        "en": "Example sponsor entry (expired, schema reference only, never shown)"
+      },
+      "url": "https://github.com/example/example-plugin",
+      "installCmd": "dsh plugin add \"github:example/example-plugin\"",
+      "placement": "card",
+      "expiresAt": "2020-01-01"
+    }
+  ]
+}

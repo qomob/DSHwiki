@@ -1,14 +1,20 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { useLang } from '../i18n/LanguageContext.jsx'
 import { UI } from '../i18n/ui.js'
 import RepoCard from './RepoCard'
+import { SponsorRankRow, SponsorCard } from './SponsorSlot'
 import { CATEGORIES, SORT_OPTIONS, getCategory } from '../lib/categories'
 import { formatNumber } from '../lib/format'
+import { sponsorFor } from '../lib/sponsors'
 import repoData from '../data/repos.json'
+import sponsorData from '../data/sponsors.json'
 
 // 防御聚合数据异常：确保 repos 始终是数组
 const repos = Array.isArray(repoData?.repos) ? repoData.repos : []
 const generatedAt = typeof repoData?.generatedAt === 'string' ? repoData.generatedAt : null
+
+// 赞助数据（过期/缺字段条目已在过滤时剔除，无有效赞助则对应展位不渲染）
+const sponsorList = Array.isArray(sponsorData?.sponsors) ? sponsorData.sponsors : []
 
 export default function HubSection() {
   const { lang } = useLang()
@@ -59,6 +65,9 @@ export default function HubSection() {
     () => [...repos].sort((a, b) => b.stars - a.stars).slice(0, 10),
     [],
   )
+
+  const rankingSponsor = useMemo(() => sponsorFor(sponsorList, 'ranking'), [])
+  const cardSponsor = useMemo(() => sponsorFor(sponsorList, 'card'), [])
 
   return (
     <section id="plugins" className="relative border-t border-border-subtle">
@@ -184,36 +193,53 @@ export default function HubSection() {
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 {topRepos.map((r, i) => {
-                  const c = getCategory(r.category)
                   return (
-                    <a
-                      key={r.id}
-                      href={r.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="ds-card-hover group flex min-w-[140px] flex-1 items-center gap-2.5 rounded-[10px] border border-border-subtle bg-surface-2 px-3 py-2.5"
-                    >
-                      <span className="font-mono text-base font-medium text-fg-dim">#{i + 1}</span>
-                      <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: c.color }} />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-xs text-fg group-hover:text-brand" title={r.fullName}>{r.name}</span>
-                        <span className="flex items-center gap-1 text-[10px] text-fg-dim">
-                          <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                          </svg>
-                          {formatNumber(r.stars)}
+                    <Fragment key={r.id}>
+                      {/* 赞助内嵌行——固定在第 3、4 名之间，不参与星标排序 */}
+                      {i === 3 && <SponsorRankRow sponsor={rankingSponsor} />}
+                      <a
+                        href={r.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="ds-card-hover group flex min-w-[140px] flex-1 items-center gap-2.5 rounded-[10px] border border-border-subtle bg-surface-2 px-3 py-2.5"
+                      >
+                        <span className="font-mono text-base font-medium text-fg-dim">#{i + 1}</span>
+                        <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: getCategory(r.category).color }} />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-xs text-fg group-hover:text-brand" title={r.fullName}>{r.name}</span>
+                          <span className="flex items-center gap-1 text-[10px] text-fg-dim">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                            </svg>
+                            {formatNumber(r.stars)}
+                          </span>
                         </span>
-                      </span>
-                    </a>
+                      </a>
+                    </Fragment>
                   )
                 })}
               </div>
+            </div>
+
+            {/* 赞助规则 + 申请入口 */}
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 px-1 text-[10px] text-fg-dim">
+              <span>{t.sponsorRules}</span>
+              <a
+                href="https://github.com/qomob/DSHwiki/issues"
+                target="_blank"
+                rel="noreferrer"
+                className="transition-colors hover:text-fg-muted"
+              >
+                {t.sponsorApply}
+              </a>
             </div>
 
             {/* 卡片网格——分页显示 */}
             {filtered.length > 0 ? (
               <>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {/* 赞助置顶卡——不参与筛选与自然排序 */}
+                  <SponsorCard sponsor={cardSponsor} />
                   {filtered.slice(0, visibleCount).map((r) => (
                     <RepoCard key={r.id} repo={r} />
                   ))}

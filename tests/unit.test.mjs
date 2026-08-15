@@ -5,6 +5,7 @@ import assert from 'node:assert/strict'
 import { categorize, getCategory } from '../src/lib/categories.js'
 import { formatNumber, relativeDate, langColor } from '../src/lib/format.js'
 import { extractRepos } from '../scripts/aggregate/awesome.mjs'
+import { activeSponsors, sponsorFor } from '../src/lib/sponsors.js'
 
 describe('categorize', () => {
   it('官方 owner 归 core', () => {
@@ -128,5 +129,46 @@ describe('extractRepos', () => {
     const result = extractRepos(md)
     assert.ok(result.includes('user/repo'))
     assert.ok(!result.some(x => x.endsWith('.git')))
+  })
+})
+
+describe('activeSponsors', () => {
+  const base = { id: 'a', name: 'a', url: 'https://example.com', placement: 'card' }
+  it('过滤已过期赞助', () => {
+    assert.equal(activeSponsors([{ ...base, expiresAt: '2020-01-01' }]).length, 0)
+  })
+  it('保留未过期赞助', () => {
+    assert.equal(activeSponsors([{ ...base, expiresAt: '2099-01-01' }]).length, 1)
+  })
+  it('到期当天仍生效', () => {
+    const now = new Date('2026-08-14T10:00:00')
+    assert.equal(activeSponsors([{ ...base, expiresAt: '2026-08-14' }], now).length, 1)
+  })
+  it('非法日期被剔除', () => {
+    assert.equal(activeSponsors([{ ...base, expiresAt: 'not-a-date' }]).length, 0)
+  })
+  it('缺必填字段的条目被剔除', () => {
+    assert.equal(activeSponsors([{ expiresAt: '2099-01-01' }, null]).length, 0)
+  })
+  it('非数组输入返回空', () => {
+    assert.deepEqual(activeSponsors(null), [])
+  })
+})
+
+describe('sponsorFor', () => {
+  const list = [
+    { id: 'r1', name: 'r', url: 'https://example.com', placement: 'ranking', expiresAt: '2099-01-01' },
+    { id: 'c1', name: 'c', url: 'https://example.com', placement: 'card', expiresAt: '2099-01-01' },
+  ]
+  it('按 placement 取对应赞助', () => {
+    assert.equal(sponsorFor(list, 'card').id, 'c1')
+    assert.equal(sponsorFor(list, 'ranking').id, 'r1')
+  })
+  it('无匹配返回 null', () => {
+    assert.equal(sponsorFor(list, 'footer'), null)
+  })
+  it('过期赞助不会被取出', () => {
+    const expired = [{ id: 'x', name: 'x', url: 'u', placement: 'card', expiresAt: '2020-01-01' }]
+    assert.equal(sponsorFor(expired, 'card'), null)
   })
 })
