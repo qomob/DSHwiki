@@ -18,7 +18,8 @@ import { CATEGORIES, getCategory, isRelevant } from './src/categories.js'
 import { loadRegistry, searchRegistry, findInRegistry, projectEntry } from './src/registry.js'
 import { createGithubClient } from './src/live.js'
 import { createRegistryRefresher } from './src/refresh.js'
-import { createInstaller, analyzeInstall, detectProfile } from './src/install.js'
+import { createInstaller, analyzeInstall, detectProfile, buildRemoveArgs, resolveDshBin } from './src/install.js'
+import { computeTier, isInstallAllowed, TIER_META } from './src/trust.js'
 import {
   formatSearchOutput,
   searchMetaFromValue,
@@ -103,6 +104,11 @@ export const Config = Schema.object({
   installTimeoutMs: Schema.number()
     .default(300000)
     .description('Timeout budget (ms) for one plugin_install execution (pnpm installs can be slow).'),
+  trustPolicy: Schema.union(['ask', 'verified-only'])
+    .default('ask')
+    .description(
+      "Install trust gate for unverified plugins. 'ask' (default) shows the tier and risks but lets the approval gate decide; 'verified-only' refuses installs of non-verified tiers outright.",
+    ),
 })
 
 const entryOutputProperties = {
@@ -120,6 +126,9 @@ const entryOutputProperties = {
   homepage: { type: 'string' },
   language: { type: 'string' },
   license: { type: 'string' },
+  tier: { type: 'string' },
+  auditAt: { type: 'string' },
+  riskSignals: { type: 'array', items: { type: 'string' } },
 }
 
 const entryOutputSchema = {
@@ -176,7 +185,19 @@ export function apply(ctx, config) {
     } catch {
       manifest = undefined
     }
-    return analyzeInstall({ fullName, registryEntry, manifest })
+    const analysis = analyzeInstall({ fullName, registryEntry, manifest })
+    let tier
+    let riskSignals
+    try {
+      const repo = await github.getRepo(fullName, signal)
+      const computed = computeTier({ entry: registryEntry ?? {}, manifest, repo })
+      tier = computed.tier
+      riskSignals = computed.signals
+    } catch {
+      tier = 'unverified'
+      riskSignals = ['live metadata unreachable']
+    }
+    return { ...analysis, tier, riskSignals }
   }
 
   const installer = createInstaller(config, { github })
@@ -469,6 +490,10 @@ export function apply(ctx, config) {
               exitCode: { type: 'integer' },
               error: { type: 'string' },
               output: { type: 'string' },
+              tier: { type: 'string' },
+              riskSignals: { type: 'array', items: { type: 'string' } },
+              installedAs: { type: 'string' },
+              inBundles: { type: 'boolean' },
               nextSteps: { type: 'array', required: true, items: { type: 'string' } },
             },
           },
@@ -510,6 +535,18 @@ export function apply(ctx, config) {
             }
           }
 
+          // Trust gate: verified-only policy refuses non-verified installs.
+          if (config.trustPolicy === 'verified-only' && planResult.tier !== 'verified') {
+            return {
+              ...planResult,
+              status: 'blocked-by-trust-policy',
+              nextSteps: [
+                `policy is verified-only and this plugin's tier is ${planResult.tier}${planResult.riskSignals?.length ? ' (' + planResult.riskSignals.join('; ') + ')' : ''}`,
+                're-run with trustPolicy: "ask" in the profile config, or install manually',
+              ],
+            }
+          }
+
           // Approval gate: the composition's approval service when present
           // (interactive prompt in the Web UI); an explicit confirm otherwise.
           const approval = ctx.get('approval')
@@ -545,11 +582,184 @@ export function apply(ctx, config) {
           }
 
           const result = await installer.run(planResult, { signal: exec.signal })
-          const nextSteps = result.status === 'installed' ? installNextSteps(profile) : [`retry after fixing the error, or run manually: ${planResult.command}`]
+          if (result.status !== 'installed') {
+            return {
+              ...planResult,
+              ...result,
+              nextSteps: [`retry after fixing the error, or run manually: ${planResult.command}`],
+            }
+          }
+
+          // Structural verification: diff the profile's dependency keys before
+          // vs after, so we report the ACTUAL installed package name and
+          // whether its bundle layer landed. The fiber itself only appears
+          // after restart — the "Plugins" tab / settings show it then.
+          const before = installer.profileSnapshot(profile)
+          const after = installer.profileSnapshot(profile)
+          const installedAs = after
+            ? (after.deps || []).find((d) => !(before?.deps || []).includes(d))
+            : undefined
+          const inBundles = after?.bundles?.includes(installedAs) ?? false
           return {
             ...planResult,
-            ...result,
-            nextSteps,
+            status: 'installed',
+            exitCode: result.exitCode,
+            output: result.output,
+            installedAs,
+            inBundles,
+            nextSteps: [
+              ...installNextSteps(profile),
+              ...(inBundles ? [] : ['the package installed but its bundle layer may not be active — check with: dsh --profile ' + profile + ' --dump-config']),
+            ],
+          }
+        },
+      }),
+    )
+  }
+
+  // Agent-executable uninstaller, symmetric to plugin_install.
+  if (config.installEnabled) {
+    ctx.tools.register(
+      defineTool({
+        name: 'plugin_remove',
+        description:
+          'Remove a dsh plugin bundle from a profile. Confirm the package name with the user (the "Plugins" tab installed list or Settings → Plugins shows it), then — after approval — runs `dsh plugin --profile <name> remove <pkg>`. Pass dryRun: true to preview without executing.',
+        parameters: {
+          pkg: {
+            type: 'string',
+            required: true,
+            description: 'Package name as installed, e.g. "dsh-plugin-hub".',
+          },
+          profile: {
+            type: 'string',
+            description: 'Target profile name (default: the profile this dsh process is running).',
+          },
+          dryRun: {
+            type: 'boolean',
+            description: 'Only verify and return the exact command; do not execute.',
+          },
+          confirm: {
+            type: 'boolean',
+            description:
+              'Explicit user confirmation, required to execute when the approval service is unavailable (e.g. headless). Always ask the user first.',
+          },
+        },
+        output: {
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              pkg: { type: 'string', required: true },
+              profile: { type: 'string', required: true },
+              status: { type: 'string', required: true },
+              command: { type: 'string', required: true },
+              exitCode: { type: 'integer' },
+              error: { type: 'string' },
+              output: { type: 'string' },
+              removedFromBundles: { type: 'boolean' },
+              nextSteps: { type: 'array', required: true, items: { type: 'string' } },
+            },
+          },
+          render: (_args, value) => [
+            {
+              type: 'text',
+              text: [
+                `plugin_remove ${value.pkg} → profile "${value.profile}": ${value.status}`,
+                value.command ? `Command: \`${value.command}\`` : '',
+                value.error ? `Error: ${value.error}` : '',
+                value.output ? `\`\`\`\n${String(value.output).trim()}\n\`\`\`` : '',
+                '',
+                'Next:',
+                ...value.nextSteps.map((s) => `- ${s}`),
+              ]
+                .filter(Boolean)
+                .join('\n'),
+            },
+          ],
+        },
+        timeoutMs: Math.max(config.installTimeoutMs || 300000, 120000),
+        isConcurrencySafe: () => false,
+        presentCall: (args) => ({
+          card: 'generic',
+          title: `plugin_remove: ${args.pkg || ''}${args.profile ? ` → ${args.profile}` : ''}`,
+          kind: 'execute',
+          rawInput: args.pkg || '',
+        }),
+        async execute(args, exec) {
+          const profile = (args.profile || '').trim() || detectProfile()
+          const pkg = String(args.pkg || '').trim()
+          if (!pkg) return { pkg: '', profile, status: 'bad-request', command: '', nextSteps: ['provide the package name'] }
+
+          const { command: bin, prefix } = resolveDshBin({ config })
+          const command = `${bin} ${[...prefix, ...buildRemoveArgs({ pkg, profile })].join(' ')}`
+
+          if (args.dryRun) {
+            return { pkg, profile, status: 'plan', command, nextSteps: [`run it: ${command}`] }
+          }
+
+          // Approval gate, same semantics as plugin_install.
+          const approval = ctx.get('approval')
+          if (approval !== undefined && exec.agent !== undefined) {
+            let outcome
+            try {
+              outcome = await approval.request({
+                agent: exec.agent,
+                toolName: 'plugin_remove',
+                callId: exec.callId,
+                reason: `Remove ${pkg} from profile "${profile}"`,
+                signal: exec.signal,
+              })
+            } catch {
+              outcome = undefined
+            }
+            if (outcome !== 'allowed-once') {
+              return {
+                pkg,
+                profile,
+                status: outcome === undefined ? 'needs-confirmation' : `approval-${outcome}`,
+                command,
+                nextSteps: [`ask the user, then retry with confirm: true or run: ${command}`],
+              }
+            }
+          } else if (args.confirm !== true) {
+            return {
+              pkg,
+              profile,
+              status: 'needs-confirmation',
+              command,
+              nextSteps: [`confirm with the user, then retry with confirm: true or run: ${command}`],
+            }
+          }
+
+          const before = installer.profileSnapshot(profile)
+          const result = await installer.runCommand({ command: bin, args: [...prefix, ...buildRemoveArgs({ pkg, profile })], signal: exec.signal })
+          const after = installer.profileSnapshot(profile)
+          const removedFromBundles = after !== null && before !== null && before.bundles.includes(pkg) && !after.bundles.includes(pkg)
+          if (!result.ok) {
+            return {
+              pkg,
+              profile,
+              status: 'failed',
+              command,
+              exitCode: result.code ?? null,
+              error: result.timedOut ? 'timed out' : result.error || `exit code ${result.code}`,
+              output: `${result.stdout || ''}${result.stderr || ''}`.trim().slice(-3000),
+              removedFromBundles,
+              nextSteps: [`retry after fixing the error, or run manually: ${command}`],
+            }
+          }
+          return {
+            pkg,
+            profile,
+            status: 'removed',
+            command,
+            exitCode: result.code,
+            output: `${result.stdout || ''}${result.stderr ? `\n${result.stderr}` : ''}`.trim().slice(-3000),
+            removedFromBundles,
+            nextSteps: [
+              `restart dsh (or relaunch the profile) so the bundle layer unmounts: dsh --profile ${profile}`,
+              ...(removedFromBundles ? [] : ['the bundle may still be listed — verify with: dsh --profile ' + profile + ' --dump-config']),
+            ],
           }
         },
       }),

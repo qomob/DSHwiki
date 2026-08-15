@@ -10,7 +10,10 @@
 //      service (see index.js), never by anything in here.
 
 import { spawn } from 'node:child_process'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { findInRegistry } from './registry.js'
+import { computeTier } from './trust.js'
 
 const INSTALL_SCRIPT_KEYS = ['prepare', 'preinstall', 'install', 'postinstall']
 
@@ -129,6 +132,10 @@ export function buildInstallArgs({ spec, profile }) {
   return ['plugin', '--profile', profile, 'add', spec]
 }
 
+export function buildRemoveArgs({ pkg, profile }) {
+  return ['plugin', '--profile', profile, 'remove', pkg]
+}
+
 // --- 3. Execution ----------------------------------------------------------
 
 const MAX_OUTPUT = 64 * 1024
@@ -209,6 +216,19 @@ export function createInstaller(config, { github, spawnImpl, findRegistry = find
       : registryEntry
         ? `git clone ${registryEntry.url}.git`
         : `git clone https://github.com/${fullName}.git`
+    // Trust tier from the same verification pass (best effort; failures
+    // degrade to unverified rather than crash the plan).
+    let tier
+    let riskSignals = []
+    try {
+      const repo = await github.getRepo(fullName, signal)
+      const computed = computeTier({ entry: registryEntry ?? {}, manifest, repo })
+      tier = computed.tier
+      riskSignals = computed.signals
+    } catch {
+      tier = 'unverified'
+      riskSignals = ['live metadata unreachable during verification']
+    }
     return {
       repo: fullName,
       profile,
@@ -216,6 +236,8 @@ export function createInstaller(config, { github, spawnImpl, findRegistry = find
       ...analysis,
       notes: analysis.notes ?? [],
       command,
+      tier,
+      riskSignals,
     }
   }
 
@@ -250,5 +272,33 @@ export function createInstaller(config, { github, spawnImpl, findRegistry = find
     }
   }
 
-  return { plan, run }
+  async function runCommand({ command, args, signal }) {
+    return spawnCapture({ command, args, timeoutMs, signal, spawnImpl })
+  }
+
+  return {
+    plan,
+    run,
+    runCommand,
+    // Structural verification after a successful install: diff the profile's
+    // dependency keys before/after, so we can report the actual installed
+    // package name and whether its bundle layer landed. The new bundle only
+    // loads after restart — this is the honest pre-restart check.
+    profileSnapshot(profile) {
+      try {
+        const pkg = JSON.parse(readFileSync(profilePkgPath(profile), 'utf8'))
+        return {
+          deps: Object.keys(pkg?.dependencies ?? {}),
+          bundles: pkg?.dsh?.profile?.bundles ?? [],
+        }
+      } catch {
+        return null
+      }
+    },
+  }
+}
+
+function profilePkgPath(profile) {
+  const home = process.env.DSH_HOME || join(process.env.HOME || '', '.dsh')
+  return join(home, 'profiles', profile, 'package.json')
 }

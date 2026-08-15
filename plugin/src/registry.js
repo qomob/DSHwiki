@@ -145,5 +145,8 @@ export function projectEntry(entry) {
   if (entry.homepage) out.homepage = entry.homepage
   if (entry.language) out.language = entry.language
   if (entry.license) out.license = entry.license
+  if (entry.tier) out.tier = entry.tier
+  if (entry.auditAt) out.auditAt = entry.auditAt
+  if (Array.isArray(entry.riskSignals) && entry.riskSignals.length > 0) out.riskSignals = entry.riskSignals
   return out
 }

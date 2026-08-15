@@ -98,10 +98,13 @@ test('resolveDshBin prefers config, env, then the running entry, then PATH', () 
   assert.deepEqual(buildInstallArgs({ spec: 'github:a/b', profile: 'p' }), ['plugin', '--profile', 'p', 'add', 'github:a/b'])
 })
 
-function fakeInstaller({ manifest, registryEntry = undefined, spawnResult } = {}) {
+function fakeInstaller({ manifest, registryEntry = undefined, spawnResult, repo } = {}) {
   const github = {
     async getPackageJson() {
       return manifest
+    },
+    async getRepo() {
+      return repo ?? { archived: false, pushed_at: '2026-08-01T00:00:00Z' }
     },
   }
   const spawnImpl = async () => spawnResult ?? { ok: true, code: 0, stdout: '+ dsh-plugin-hub', stderr: '' }

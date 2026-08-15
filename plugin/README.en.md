@@ -6,7 +6,9 @@ Discover, evaluate, and **install** community plugins right inside dsh (DeepSeek
 
 - **`plugin_search`** — Keyword / category search over the dsh community ecosystem, returning description, stars, category, repo link, and the **install command**.
 - **`plugin_info`** — Details for one plugin repo plus **install verification** (does the target declare `dsh.bundle`/`dsh.client`, does it ship install-time scripts, is it a monorepo subdirectory package).
-- **`plugin_install`** — Agent-driven install: verify the target manifest → produce the real install command and risk notes → execute `dsh plugin --profile <name> add <spec>` **behind user approval**.
+- **`plugin_install`** — Agent-driven install: verify the target manifest → produce the real install command and risk notes → execute `dsh plugin --profile <name> add <spec>` **behind user approval**, then run a **structural verification** (the actual installed package name and whether its bundle layer landed).
+- **`plugin_remove`** — Agent-driven uninstall: symmetric to install (approval gate + dryRun + structural verification of the removed layer).
+- **Supply-chain trust tiers** — a nightly audit computes `Verified / Community / Unverified` for every catalog entry (manifest cleanliness, install-time scripts, archived, activity, license): card badges, a "Verified" sidebar filter, and `plugin_install` supports `trustPolicy: 'verified-only'` to refuse non-verified sources outright.
 - **Web UI "Plugins" tab (plugin marketplace)** — A directory page in the session view ring (after Chat / Trajectory), mirroring dsh.qomob.ai: sticky left category sidebar (color dot + label + mono count + installed filter row), search / sort / refresh at the top right, card flow below; collapses into a single-column horizontal strip on narrow containers via container queries:
   - Search (Chinese/English + topics), 16 categories, relevance / stars / recently-updated / **new listings** sorting
   - **Installed state** — reads the current profile's loader inventory via the official `pluginInventory` remote: green "Installed" badges on cards (with a runtime-status dot), an "Installed" sidebar filter row, and an "Installed · not in catalog" health list (community bundles + running/failed status)
@@ -113,6 +115,7 @@ Every tunable is a config field (validated by Schemastery at load; invalid value
 | `installEnabled` | boolean | `true` | Register the `plugin_install` tool (agent-driven installs; turn off to deny install capability) |
 | `dshBin` | string | `''` | Path to the dsh CLI used by `plugin_install`; empty = auto-detect (`DSH_PLUGIN_HUB_DSH_BIN` env → current process → PATH) |
 | `installTimeoutMs` | number | `300000` | Timeout for one install execution (ms; pnpm can be slow) |
+| `trustPolicy` | string | `ask` | Install trust gate: `ask` (default, tier is advisory, approval gate still decides) / `verified-only` (refuses non-verified tiers, returns blocked) |
 
 ---
 
@@ -169,7 +172,7 @@ GitHub Actions (daily 08:00 Beijing / every push)
 ```bash
 cd plugin
 pnpm install
-npm test              # 35 unit tests (node:test, no network)
+npm test              # 44 unit tests (node:test, no network)
 npm run build-client  # Rebuild the Web UI tab artifact (client.js; commit it)
 npm run smoke         # End-to-end: real cordis loader + real dsh-tools pipeline
 ```

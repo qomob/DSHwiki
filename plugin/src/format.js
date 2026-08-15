@@ -112,6 +112,7 @@ export function formatInfoOutput(value) {
 
 function renderInstallSection(install) {
   const lines = ['', 'Install verification:']
+  if (install.tier) lines.push(`- trust tier: \`${install.tier}\`${install.riskSignals?.length ? ' · signals: ' + install.riskSignals.join('; ') : ''}`)
   lines.push(`- kind: \`${install.kind}\` · dsh.bundle manifest: ${install.hasBundle ? 'yes' : 'no'} · client UI: ${install.hasClient ? 'yes' : 'no'} · install-time scripts: ${install.hasPrepare ? 'YES' : 'no'}`)
   if (install.command) lines.push(`- command: \`${install.command}\``)
   for (const risk of install.risks || []) lines.push(`- ⚠ ${risk}`)
@@ -123,6 +124,12 @@ function renderInstallSection(install) {
 export function formatInstallOutput(value) {
   const head = `plugin_install ${value.repo} → profile "${value.profile}": ${value.status}`
   const lines = [head]
+  if (value.tier) {
+    lines.push(`Trust tier: ${value.tier}${value.riskSignals?.length ? ' (' + value.riskSignals.join('; ') + ')' : ''}`)
+  }
+  if (value.installedAs) {
+    lines.push(`Installed as: ${value.installedAs}${value.inBundles ? ' · bundle layer active' : ' · bundle layer NOT detected'}`)
+  }
   if (!value.repoFound) {
     lines.push('Repository not found on GitHub.')
   }

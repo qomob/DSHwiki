@@ -72,6 +72,9 @@ jobs:
         continue-on-error: true
         run: |
           node plugin/scripts/sync-registry.mjs
+          # 供应链信任审计：为每条目录条目计算 Verified/Community/Unverified 分级
+          # （每个插件 2 次 GitHub 请求，需 GH_TOKEN）
+          GH_TOKEN="${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}" node plugin/scripts/audit-registry.mjs
           # 重建 Web UI「插件」tab 的内嵌快照副本（client.js 产物随源提交）
           npx pnpm install --dir plugin --store-dir .tmp-pnpm-store
           npm run build-client --prefix plugin

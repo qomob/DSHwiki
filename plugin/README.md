@@ -6,7 +6,9 @@
 
 - **`plugin_search`** — 按关键词 / 分类检索 dsh 社区插件生态，返回简介、星标、分类、仓库链接与**安装命令**。
 - **`plugin_info`** — 查询单个插件仓库的详情，并做**安装核验**（目标仓库是否有 `dsh.bundle`/`dsh.client` 声明、是否带安装期脚本、是否 monorepo 子目录包）。
-- **`plugin_install`** — 代理安装：核验目标 manifest → 生成真实安装命令与风险提示 → **经用户审批**后执行 `dsh plugin --profile <name> add <spec>`。
+- **`plugin_install`** — 代理安装：核验目标 manifest → 生成真实安装命令与风险提示 → **经用户审批**后执行 `dsh plugin --profile <name> add <spec>`，装后做**结构核验**（确认实际安装的包名与 bundle 层是否落盘）。
+- **`plugin_remove`** — 代理卸载：对称于安装，审批门 + dryRun + 结构核验（bundle 层是否移除）。
+- **供应链信任分级** — 每日审计作业为目录内每个插件计算 `Verified / Community / Unverified` 分级（manifest 干净度、安装期脚本、归档、活跃度、许可证），卡片徽章 + 侧栏「已验证」过滤 + `plugin_install` 可设 `trustPolicy: 'verified-only'` 直接拒绝未验证来源。
 - **Web UI「插件」tab（插件市场）** — 会话视图环（对话 / 轨迹之后）的目录浏览页，布局镜像 dsh.qomob.ai：左侧粘性分类侧边栏（色点 + 标签 + mono 计数 + 已安装过滤行），右上搜索 / 排序 / 刷新，下方卡片流；窄容器经容器查询自动折叠为单列横滚分类条：
   - 搜索（中英文 + topics）、16 分类、相关度 / 星标 / 最近更新 / **新上架**排序
   - **已安装状态**：经官方 `pluginInventory` remote 读取当前 profile 的加载器清单——卡片绿色「已安装」徽章（含运行状态点）、侧栏「已安装」过滤行，以及「已安装·不在目录」健康列表（社区组合包 + 运行/失败状态）
@@ -113,6 +115,7 @@ dsh plugin --profile myhub add "github:qomob/dsh#path:/plugin"  # 重新 add 即
 | `installEnabled` | boolean | `true` | 是否注册 `plugin_install` 工具（代理执行安装；不想给 agent 安装能力就关掉） |
 | `dshBin` | string | `''` | `plugin_install` 用的 dsh CLI 路径；空 = 自动检测（`DSH_PLUGIN_HUB_DSH_BIN` 环境变量 → 当前进程 → PATH） |
 | `installTimeoutMs` | number | `300000` | 一次安装执行的超时（毫秒，pnpm 可能较慢） |
+| `trustPolicy` | string | `ask` | 安装信任门：`ask`（默认，分级只作提示，仍走审批门）/ `verified-only`（拒绝非 Verified 分级，直接返回 blocked） |
 
 ---
 
@@ -168,7 +171,7 @@ GitHub Actions（每日 08:00 北京时间 / 每次 push）
 ```bash
 cd plugin
 pnpm install
-npm test              # 35 个单元测试（node:test，无网络）
+npm test              # 44 个单元测试（node:test，无网络）
 npm run build-client  # 重建 Web UI「插件」tab 产物（client.js，需提交）
 npm run smoke         # 端到端：真实 cordis loader + 真实 dsh-tools 管线执行工具
 ```

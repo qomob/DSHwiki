@@ -184,6 +184,12 @@ const PHASE_LABELS = {
   unloading: '卸载中',
 }
 
+const TIER_META = {
+  verified: { label: '已验证', en: 'Verified' },
+  community: { label: '社区', en: 'Community' },
+  unverified: { label: '未验证', en: 'Unverified' },
+}
+
 // --- styles ----------------------------------------------------------------
 // Structural styles live in a class sheet (injected per mount; identical
 // rules are harmless) because hover/active and container queries cannot be
@@ -324,6 +330,25 @@ const css = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '3px',
+  },
+  badgeVerified: {
+    fontSize: '10.5px',
+    padding: '1px 7px',
+    borderRadius: '999px',
+    color: 'var(--dsw-alias-state-success-primary)',
+    border: '1px solid var(--dsw-alias-state-success-primary)',
+    lineHeight: '16px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '3px',
+  },
+  badgeCommunity: {
+    fontSize: '10.5px',
+    padding: '1px 7px',
+    borderRadius: '999px',
+    color: 'var(--dsw-alias-label-secondary)',
+    border: '1px solid var(--dsw-alias-border-l2)',
+    lineHeight: '16px',
   },
   badgeOfficial: {
     fontSize: '10.5px',
@@ -480,6 +505,19 @@ function PluginCard({ entry, installedPhase, expanded, onToggleExpanded, onTopic
           </span>
         ) : null}
         {entry.official ? <span style={css.badgeOfficial}>official</span> : null}
+        {entry.tier === 'verified' ? (
+          <span style={css.badgeVerified} title="供应链接入已核验：manifest 干净、活跃、未归档">
+            <IconCheckOutline14 size={9} />
+            {TIER_META.verified.label}
+          </span>
+        ) : null}
+        {entry.tier === 'community' ? <span style={css.badgeCommunity} title="社区维护：已核验为真实 dsh 插件">{TIER_META.community.label}</span> : null}
+        {entry.tier === 'unverified' ? (
+          <span style={css.badgeStale} title="未通过信任核验（见详情）">
+            <IconWarningOutline16 size={10} />
+            {TIER_META.unverified.label}
+          </span>
+        ) : null}
         {newcomer ? <span style={css.badgeNew}>新上架</span> : null}
         {stale ? (
           <span style={css.badgeStale} title={`最后更新 ${formatWhen(entry.updatedAt)}`}>
@@ -539,6 +577,20 @@ function PluginCard({ entry, installedPhase, expanded, onToggleExpanded, onTopic
           </DetailRow>
           <DetailRow label="分类">{entry.category || 'other'}</DetailRow>
           <DetailRow label="许可证">{entry.license || '未声明'}</DetailRow>
+          {entry.tier ? (
+            <DetailRow label="信任核验">
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                {entry.tier === 'verified' ? <IconCheckOutline14 size={11} /> : null}
+                {TIER_META[entry.tier]?.label || entry.tier}
+                {entry.auditAt ? <span style={{ fontSize: '10.5px', opacity: 0.7 }}>· {String(entry.auditAt).slice(0, 10)}</span> : null}
+              </span>
+              {Array.isArray(entry.riskSignals) && entry.riskSignals.length > 0 ? (
+                <span style={{ display: 'block', fontSize: '11px', opacity: 0.85, marginTop: '2px' }}>
+                  {entry.riskSignals.join(' · ')}
+                </span>
+              ) : null}
+            </DetailRow>
+          ) : null}
           <DetailRow label="更新">
             {entry.updatedAt ? `${String(entry.updatedAt).slice(0, 10)}（${formatWhen(entry.updatedAt) || '未知'}）` : '未知'}
           </DetailRow>
@@ -590,6 +642,7 @@ export function HubView({ listInstalled }) {
   const [category, setCategory] = useState('all')
   const [sort, setSort] = useState('relevance')
   const [onlyInstalled, setOnlyInstalled] = useState(false)
+  const [onlyVerified, setOnlyVerified] = useState(false)
   const [limit, setLimit] = useState(PAGE_SIZE)
   const [expandedKey, setExpandedKey] = useState(null)
   const [data, setData] = useState(() => ({
@@ -645,7 +698,7 @@ export function HubView({ listInstalled }) {
 
   useEffect(() => {
     setLimit(PAGE_SIZE)
-  }, [query, category, sort, onlyInstalled])
+  }, [query, category, sort, onlyInstalled, onlyVerified])
 
   const phaseOf = useCallback(
     (entry) => {
@@ -683,6 +736,8 @@ export function HubView({ listInstalled }) {
     return map
   }, [data.plugins])
 
+  const verifiedCount = useMemo(() => data.plugins.filter((p) => p.tier === 'verified').length, [data.plugins])
+
   const installedCount = useMemo(() => {
     if (installed === null) return null
     let n = 0
@@ -697,6 +752,7 @@ export function HubView({ listInstalled }) {
       .filter((m) => m.score >= 0)
     if (category !== 'all') matched = matched.filter((m) => (m.entry.category || 'other') === category)
     if (onlyInstalled) matched = matched.filter((m) => phaseOf(m.entry) !== undefined)
+    if (onlyVerified) matched = matched.filter((m) => m.entry.tier === 'verified')
     if (sort === 'stars') matched.sort((a, b) => (b.entry.stars || 0) - (a.entry.stars || 0))
     else if (sort === 'updated') matched.sort((a, b) => daysSince(a.entry.updatedAt) - daysSince(b.entry.updatedAt))
     else if (sort === 'newest') matched.sort((a, b) => daysSince(a.entry.firstSeenAt) - daysSince(b.entry.firstSeenAt))
@@ -709,10 +765,10 @@ export function HubView({ listInstalled }) {
       )
     }
     return matched.map((m) => m.entry)
-  }, [data.plugins, query, category, sort, onlyInstalled, phaseOf])
+  }, [data.plugins, query, category, sort, onlyInstalled, onlyVerified, phaseOf])
 
   const visible = results.slice(0, limit)
-  const hasFilter = query !== '' || category !== 'all' || onlyInstalled
+  const hasFilter = query !== '' || category !== 'all' || onlyInstalled || onlyVerified
   const activeCategory = CATEGORIES.find((c) => c.id === category)
 
   const onTopicClick = useCallback((topic) => {
@@ -723,6 +779,7 @@ export function HubView({ listInstalled }) {
     setQuery('')
     setCategory('all')
     setOnlyInstalled(false)
+    setOnlyVerified(false)
   }, [])
 
   return (
@@ -810,6 +867,19 @@ export function HubView({ listInstalled }) {
                     </button>
                   </>
                 ) : null}
+                {verifiedCount > 0 ? (
+                  <button
+                    type="button"
+                    className={`hub-cat${onlyVerified ? ' active' : ''}`}
+                    onClick={() => setOnlyVerified((v) => !v)}
+                    aria-pressed={onlyVerified}
+                    title="只看通过供应链接入核验的（Verified）"
+                  >
+                    <span className="hub-cat-dot" style={{ background: 'var(--dsw-alias-state-success-primary)' }} />
+                    <span className="hub-cat-name">已验证</span>
+                    <span className="hub-cat-count">{verifiedCount}</span>
+                  </button>
+                ) : null}
               </nav>
             </div>
           </aside>
@@ -826,6 +896,7 @@ export function HubView({ listInstalled }) {
               {results.length} 个插件
               {query ? ` · 「${query}」` : ''}
               {onlyInstalled ? ' · 仅已安装' : ''}
+              {onlyVerified ? ' · 仅已验证' : ''}
               {results.length > visible.length ? ` · 显示前 ${visible.length}` : ''}
               {installed === null ? ' · 已装状态未知' : ''}
             </p>
@@ -891,6 +962,7 @@ export function HubView({ listInstalled }) {
             <div className="hub-footer">
               <span>
                 共 {data.plugins.length} 个 · 数据 {String(data.generatedAt).slice(0, 10) || '未知'}
+              {verifiedCount > 0 ? ` · 已验证 ${verifiedCount}` : ''}
                 {data.origin === 'refreshed' ? ' · 已在线更新' : ' · 内嵌快照'}
               </span>
               {refreshFailed ? (

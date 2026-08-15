@@ -65,13 +65,13 @@ test('apply registers both tools against a stub tools registry', () => {
   globalThis.fetch = async () => new Response('{}', { status: 200 })
   try {
     apply(stubCtx, Config({ registryUrl: '' }))
-    assert.equal(registered.length, 3)
+    assert.equal(registered.length, 4)
   } finally {
     globalThis.fetch = realFetch
   }
   assert.deepEqual(
     registered.map((d) => d.name).sort(),
-    ['plugin_info', 'plugin_install', 'plugin_search'],
+    ['plugin_info', 'plugin_install', 'plugin_remove', 'plugin_search'],
   )
   for (const def of registered) {
     assert.equal(typeof def.execute, 'function')
