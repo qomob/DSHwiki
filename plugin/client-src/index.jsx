@@ -187,8 +187,20 @@ const PHASE_LABELS = {
 // Structural styles live in a class sheet (injected per mount; identical
 // rules are harmless) because hover/active and container queries cannot be
 // expressed as inline styles. Colors come from --dsw-alias-* tokens so the
-// tab follows the shell theme; narrow viewports collapse the sidebar into a
-// horizontal strip via the hub container query.
+// tab follows the shell theme.
+//
+// Responsive strategy (mirrors the official shell: container queries for the
+// panel, media queries as the coarse fallback):
+//   · @container hub (width<=680px) — the conversation panel itself is
+//     narrow: sidebar collapses into a horizontal strip (same 680px the
+//     official settings inventory uses).
+//   · @media (width<=720px) — phones / small windows, and the fallback for
+//     browsers predating container queries: the same collapse still applies.
+//   · @media (hover:hover) — hover states only where hover exists (no sticky
+//     hover on touch), matching the conversation package's guard.
+//   · @media (pointer:coarse) — larger touch targets for fingers.
+//   · @media (prefers-reduced-motion:reduce) — no spin/transition, matching
+//     the shell's motion policy.
 
 const STYLE_SHEET = `
 .hub-root { container-type: inline-size; container-name: hub; height: 100%; display: flex; flex-direction: column; background: var(--dsw-alias-bg-base); color: var(--dsw-alias-label-primary); font-family: inherit; min-height: 0; }
@@ -199,22 +211,29 @@ const STYLE_SHEET = `
 .hub-side-label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; color: var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary)); padding: 2px 6px 8px; }
 .hub-side-nav { display: flex; flex-direction: column; gap: 1px; }
 .hub-cat { display: flex; align-items: center; gap: 8px; width: 100%; padding: 5px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--dsw-alias-label-secondary); font-size: 12px; text-align: left; cursor: pointer; transition: background .12s ease, color .12s ease; }
-.hub-cat:hover { background: var(--dsw-alias-bg-layer-2); color: var(--dsw-alias-label-primary); }
-.hub-cat.active { background: var(--dsw-alias-bg-layer-2); color: var(--dsw-alias-label-primary); font-weight: 600; }
 .hub-cat-dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; display: inline-block; }
 .hub-cat-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.hub-cat-count { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; color: var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary)); }
+.hub-cat-count { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Cascadia Mono', 'Liberation Mono', 'DejaVu Sans Mono', monospace; font-size: 10px; color: var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary)); }
+.hub-cat.active { background: var(--dsw-alias-bg-layer-2); color: var(--dsw-alias-label-primary); font-weight: 600; }
 .hub-cat.active .hub-cat-count { color: var(--dsw-alias-label-secondary); }
 .hub-side-sep { height: 1px; background: var(--dsw-alias-border-l1); margin: 8px 4px; }
-.hub-toolbar { display: flex; gap: 8px; align-items: center; max-width: 980px; margin: 0 auto 10px; width: 100%; box-sizing: border-box; padding: 0 20px; }
-.hub-search { flex: 1 1 240px; min-width: 200px; display: flex; }
+.hub-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; max-width: 980px; margin: 0 auto 10px; width: 100%; box-sizing: border-box; padding: 0 20px; }
+.hub-search { flex: 1 1 240px; min-width: 160px; display: flex; }
 .hub-select { padding: 0 8px; height: 28px; border-radius: 999px; border: 1px solid var(--dsw-alias-border-l1); background: var(--dsw-alias-bg-layer-1); color: var(--dsw-alias-label-secondary); font-size: 12px; cursor: pointer; }
 .hub-meta { font-size: 11.5px; color: var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary)); margin: 0 0 10px; }
 .hub-list { display: flex; flex-direction: column; gap: 8px; }
 .hub-more { display: flex; justify-content: center; margin: 14px 0 6px; }
 .hub-sec { font-size: 12px; font-weight: 600; color: var(--dsw-alias-label-secondary); margin: 18px 0 8px; display: flex; align-items: center; gap: 6px; }
 .hub-footer { display: flex; align-items: center; gap: 8px; justify-content: center; padding: 10px 0 18px; font-size: 11px; color: var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary)); flex-wrap: wrap; }
-@container hub (max-width: 680px) {
+
+/* Hover only where hover exists — no sticky hover on touch devices. */
+@media (hover:hover) {
+  .hub-cat:hover { background: var(--dsw-alias-bg-layer-2); color: var(--dsw-alias-label-primary); }
+  .hub-topic:hover { border-style: solid; color: var(--dsw-alias-label-primary); }
+}
+
+/* Panel-level collapse. */
+@container hub (width<=680px) {
   .hub-layout { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   .hub-side { position: static; max-height: none; overflow: visible; }
   .hub-side-card { padding: 8px; }
@@ -222,6 +241,36 @@ const STYLE_SHEET = `
   .hub-cat { width: auto; flex: 0 0 auto; padding: 4px 8px; }
   .hub-cat-count { display: none; }
   .hub-side-sep { display: none; }
+}
+
+/* Viewport-level collapse: phones, small windows, and the fallback for
+   browsers without container-query support (they skip the block above but
+   still get the single-column layout from here). */
+@media (width<=720px) {
+  .hub-layout { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .hub-side { position: static; max-height: none; overflow: visible; }
+  .hub-side-card { padding: 8px; }
+  .hub-side-nav { display: flex; flex-direction: row; gap: 4px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+  .hub-cat { width: auto; flex: 0 0 auto; padding: 4px 8px; }
+  .hub-cat-count { display: none; }
+  .hub-side-sep { display: none; }
+  .hub-scroll { padding: 12px 12px 8px; }
+  .hub-toolbar { padding: 0 12px; }
+}
+
+/* Fingers get bigger targets (pointer users keep the compact paddings). */
+@media (pointer:coarse) {
+  .hub-cat { padding: 8px 10px; }
+  .hub-topic { padding: 4px 9px; }
+}
+
+.hub-chevron { transition: transform .15s ease; }
+
+/* Respect the user's motion preference, like the shell does. */
+@media (prefers-reduced-motion:reduce) {
+  .hub-cat { transition: none; }
+  .hub-chevron { transition: none; }
+  .hub-spin { animation: none !important; }
 }
 @keyframes dsh-plugin-hub-spin { to { transform: rotate(360deg) } }
 `
@@ -454,7 +503,7 @@ function PluginCard({ entry, installedPhase, expanded, onToggleExpanded, onTopic
             onClick={onToggleExpanded}
           >
             详情
-            <span style={{ display: 'inline-flex', transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform .15s ease' }}>
+            <span className="hub-chevron" style={{ display: 'inline-flex', transform: expanded ? 'rotate(180deg)' : 'none' }}>
               <IconChevronDownOutline14 size={12} />
             </span>
           </Button>
@@ -467,7 +516,7 @@ function PluginCard({ entry, installedPhase, expanded, onToggleExpanded, onTopic
       {topics.length > 0 ? (
         <div style={css.topicRow}>
           {topics.map((t) => (
-            <button key={t} type="button" style={css.topic} onClick={() => onTopicClick(t)} title={`按 topic "${t}" 过滤`}>
+            <button key={t} type="button" className="hub-topic" style={css.topic} onClick={() => onTopicClick(t)} title={`按 topic "${t}" 过滤`}>
               {t}
             </button>
           ))}
@@ -700,7 +749,7 @@ export function HubView({ listInstalled }) {
           title={refreshing ? '刷新中…' : '刷新目录与已装状态'}
           onClick={doRefresh}
         >
-          <span style={{ display: 'inline-flex', animation: refreshing ? 'dsh-plugin-hub-spin 1s linear infinite' : 'none' }}>
+          <span className="hub-spin" style={{ display: 'inline-flex', animation: refreshing ? 'dsh-plugin-hub-spin 1s linear infinite' : 'none' }}>
             <IconRefreshOutline14 size={13} />
           </span>
         </Button>
