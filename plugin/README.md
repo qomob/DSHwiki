@@ -30,7 +30,7 @@
 
 ```bash
 # 创建/使用一个 profile（首次会自动初始化）
-dsh plugin --profile myhub add "github:qomob/DSHwiki#path:/plugin"
+dsh plugin --profile myhub add "github:qomob/dsh#path:/plugin"
 
 # 验证层组合（应看到 "# == dsh-plugin-hub" 分层与 plugin-hub 行）
 dsh --profile myhub --dump-config
@@ -40,7 +40,7 @@ dsh --profile myhub
 ```
 
 > pnpm 子目录语法为 `#path:/plugin`（pnpm ≥ 9）。要锁定某个 commit：
-> `dsh plugin --profile myhub add "github:qomob/DSHwiki#<sha>&path:/plugin"`
+> `dsh plugin --profile myhub add "github:qomob/dsh#<sha>&path:/plugin"`
 > （git 安装本质是拉源码，锁定 commit 更安全。）
 
 ### 从本地目录 / tarball / npm 安装
@@ -61,7 +61,7 @@ dsh plugin --profile myhub add dsh-plugin-hub
 
 ```bash
 dsh plugin --profile myhub remove dsh-plugin-hub   # 移除依赖与对应层
-dsh plugin --profile myhub add "github:qomob/DSHwiki#path:/plugin"  # 重新 add 即更新
+dsh plugin --profile myhub add "github:qomob/dsh#path:/plugin"  # 重新 add 即更新
 ```
 
 ### 在 Web UI 中使用
@@ -105,7 +105,7 @@ dsh plugin --profile myhub add "github:qomob/DSHwiki#path:/plugin"  # 重新 add
 | `liveTimeoutMs` | number | `15000` | live 请求超时（毫秒），同时作为工具的协作超时预算 |
 | `systemPromptGuidance` | boolean | `true` | 是否注册系统提示词引导（教模型何时用 plugin_search） |
 | `autoRefresh` | boolean | `true` | 是否启用运行时快照自动刷新（启动时 + 每 `refreshIntervalHours` 小时一次） |
-| `registryUrl` | string | `…raw.githubusercontent.com/qomob/DSHwiki/main/plugin/data/registry.json` | 快照下载地址；raw.githubusercontent.com 不可达时可换 `cdn.jsdelivr.net/gh/qomob/DSHwiki@main/plugin/data/registry.json` 等镜像 |
+| `registryUrl` | string | `…raw.githubusercontent.com/qomob/dsh/main/plugin/data/registry.json` | 快照下载地址；raw.githubusercontent.com 不可达时可换 `cdn.jsdelivr.net/gh/qomob/dsh@main/plugin/data/registry.json` 等镜像 |
 | `refreshIntervalHours` | number | `24` | 刷新间隔（小时，1–720） |
 | `refreshTimeoutMs` | number | `10000` | 每次快照下载的超时（毫秒） |
 | `installEnabled` | boolean | `true` | 是否注册 `plugin_install` 工具（代理执行安装；不想给 agent 安装能力就关掉） |

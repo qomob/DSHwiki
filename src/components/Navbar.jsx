@@ -61,7 +61,7 @@ export default function Navbar() {
             {lang === 'zh' ? 'EN' : '中'}
           </button>
           <a
-            href="https://github.com/qomob/DSHwiki"
+            href="https://github.com/qomob/dsh"
             target="_blank"
             rel="noreferrer"
             className="ds-btn-secondary hidden items-center gap-1.5 !px-3.5 !py-1.5 !text-xs sm:flex"

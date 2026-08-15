@@ -72,8 +72,8 @@ export function apply(ctx) {
       // Our own repo: the bundle lives in a subdirectory, so verification must
       // flag the no-bundle-at-root risk instead of blind-recommending.
       try {
-        const plan = await run(ctx, 'smoke-install-1', 'plugin_install', { repo: 'qomob/DSHwiki', dryRun: true })
-        console.log('\n=== plugin_install {repo: "qomob/DSHwiki", dryRun: true} (monorepo case) ===')
+        const plan = await run(ctx, 'smoke-install-1', 'plugin_install', { repo: 'qomob/dsh', dryRun: true })
+        console.log('\n=== plugin_install {repo: "qomob/dsh", dryRun: true} (monorepo case) ===')
         console.log(text(plan))
         if (plan.isError) failures.push('plugin_install dryRun (monorepo) failed')
         if (!/no dsh\.bundle|subpackage/.test(text(plan))) failures.push('monorepo risk not flagged')

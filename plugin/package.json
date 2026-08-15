@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-hub",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Discover DeepSeek Harness (dsh) community plugins from inside dsh. Ships the plugin_search and plugin_info tools backed by an embedded registry snapshot and the live GitHub ecosystem.",
   "type": "module",
   "license": "MIT",
@@ -52,7 +52,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/qomob/DSHwiki.git",
+    "url": "git+https://github.com/qomob/dsh.git",
     "directory": "plugin"
   },
   "dsh": {

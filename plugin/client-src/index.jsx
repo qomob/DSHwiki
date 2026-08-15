@@ -70,8 +70,8 @@ const LANGUAGE_COLORS = {
 }
 
 const REFRESH_URLS = [
-  'https://cdn.jsdelivr.net/gh/qomob/DSHwiki@main/plugin/data/registry.json',
-  'https://raw.githubusercontent.com/qomob/DSHwiki/main/plugin/data/registry.json',
+  'https://cdn.jsdelivr.net/gh/qomob/dsh@main/plugin/data/registry.json',
+  'https://raw.githubusercontent.com/qomob/dsh/main/plugin/data/registry.json',
 ]
 
 const PAGE_SIZE = 24

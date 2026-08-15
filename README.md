@@ -47,7 +47,7 @@
 [`plugin/`](plugin/) 把本站的插件聚合能力做成了任何 dsh 用户都能安装的组合包（纯 JavaScript ESM、无构建步骤、无需 pnpm 构建授权）：
 
 ```bash
-dsh plugin --profile myhub add "github:qomob/DSHwiki#path:/plugin"
+dsh plugin --profile myhub add "github:qomob/dsh#path:/plugin"
 dsh --profile myhub
 # 然后对 agent 说：「用 plugin_search 找一个 dsh 桌面通知插件」
 ```
@@ -71,8 +71,8 @@ dsh --profile myhub
 ### 本地开发
 
 ```bash
-git clone https://github.com/qomob/DSHwiki.git
-cd DSHwiki
+git clone https://github.com/qomob/dsh.git
+cd dsh
 npm install
 npm run dev      # → http://localhost:5173
 ```

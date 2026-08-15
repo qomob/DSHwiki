@@ -33,7 +33,7 @@ test('Config schema validates and fills defaults', () => {
       liveTimeoutMs: 15000,
       systemPromptGuidance: true,
       autoRefresh: true,
-      registryUrl: 'https://raw.githubusercontent.com/qomob/DSHwiki/main/plugin/data/registry.json',
+      registryUrl: 'https://raw.githubusercontent.com/qomob/dsh/main/plugin/data/registry.json',
       refreshIntervalHours: 24,
       refreshTimeoutMs: 10000,
     },

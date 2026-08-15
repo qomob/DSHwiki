@@ -225,7 +225,7 @@ export default function HubSection() {
             <div className="mt-2 flex flex-wrap items-center justify-between gap-2 px-1 text-[10px] text-fg-dim">
               <span>{t.sponsorRules}</span>
               <a
-                href="https://github.com/qomob/DSHwiki/issues"
+                href="https://github.com/qomob/dsh/issues"
                 target="_blank"
                 rel="noreferrer"
                 className="transition-colors hover:text-fg-muted"

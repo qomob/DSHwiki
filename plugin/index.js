@@ -82,9 +82,9 @@ export const Config = Schema.object({
       'Best-effort daily download of the latest registry snapshot (published by the DSHwiki CI); keeps the embedded catalog fresh without a re-install. Failures silently keep the current snapshot.',
     ),
   registryUrl: Schema.string()
-    .default('https://raw.githubusercontent.com/qomob/DSHwiki/main/plugin/data/registry.json')
+    .default('https://raw.githubusercontent.com/qomob/dsh/main/plugin/data/registry.json')
     .description(
-      'Where to download refreshed snapshots from. Point at a mirror (e.g. cdn.jsdelivr.net/gh/qomob/DSHwiki@main/plugin/data/registry.json) when raw.githubusercontent.com is unreachable.',
+      'Where to download refreshed snapshots from. Point at a mirror (e.g. cdn.jsdelivr.net/gh/qomob/dsh@main/plugin/data/registry.json) when raw.githubusercontent.com is unreachable.',
     ),
   refreshIntervalHours: Schema.number()
     .default(24)

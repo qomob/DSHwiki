@@ -14,7 +14,7 @@ import {
 } from '../src/install.js'
 
 test('specFromInstallCmd preserves #path fragments from curated commands', () => {
-  assert.equal(specFromInstallCmd('dsh plugin add "github:qomob/DSHwiki#path:/plugin"'), 'github:qomob/DSHwiki#path:/plugin')
+  assert.equal(specFromInstallCmd('dsh plugin add "github:qomob/dsh#path:/plugin"'), 'github:qomob/dsh#path:/plugin')
   assert.equal(specFromInstallCmd('dsh plugin add "github:a/b"'), 'github:a/b')
   assert.equal(specFromInstallCmd('git clone https://x'), null)
   assert.equal(specFromInstallCmd(''), null)
@@ -114,11 +114,11 @@ function fakeInstaller({ manifest, registryEntry = undefined, spawnResult } = {}
 test('installer.plan merges registry spec fragments and manifest facts', async () => {
   const installer = fakeInstaller({
     manifest: { dsh: { bundle: { patch: './c.yml' } }, scripts: { prepare: 'build' } },
-    registryEntry: { installCmd: 'dsh plugin add "github:qomob/DSHwiki#path:/plugin"', installType: 'plugin' },
+    registryEntry: { installCmd: 'dsh plugin add "github:qomob/dsh#path:/plugin"', installType: 'plugin' },
   })
-  const plan = await installer.plan({ repo: 'qomob/DSHwiki', profile: 'demo' })
-  assert.equal(plan.spec, 'github:qomob/DSHwiki#path:/plugin')
-  assert.equal(plan.command, 'dsh plugin --profile demo add "github:qomob/DSHwiki#path:/plugin"')
+  const plan = await installer.plan({ repo: 'qomob/dsh', profile: 'demo' })
+  assert.equal(plan.spec, 'github:qomob/dsh#path:/plugin')
+  assert.equal(plan.command, 'dsh plugin --profile demo add "github:qomob/dsh#path:/plugin"')
   assert.equal(plan.hasBundle, true)
   assert.equal(plan.hasPrepare, true)
   assert.ok(Array.isArray(plan.notes))
