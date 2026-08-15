@@ -129,6 +129,13 @@ function formatWhen(iso) {
   return `${Math.floor(d / 365)} 年前`
 }
 
+function formatSize(kb) {
+  if (!Number.isFinite(kb) || kb <= 0) return null
+  if (kb < 1024) return `${kb} KB`
+  if (kb < 1024 * 1024) return `${(kb / 1024).toFixed(1)} MB`
+  return `${(kb / 1024 / 1024).toFixed(2)} GB`
+}
+
 function isNewcomer(entry) {
   return daysSince(entry.firstSeenAt) <= NEW_WITHIN_DAYS
 }
@@ -478,7 +485,7 @@ function DetailRow({ label, children }) {
   )
 }
 
-function PluginCard({ entry, installedPhase, expanded, onToggleExpanded, onTopicClick }) {
+function PluginCard({ entry, installedPhase, installedModuleName, expanded, onToggleExpanded, onTopicClick }) {
   const zh = entry.descriptionZh || ''
   const en = entry.description || ''
   const cmd = installCommandOf(entry)
@@ -488,6 +495,11 @@ function PluginCard({ entry, installedPhase, expanded, onToggleExpanded, onTopic
   const installed = installedPhase !== undefined
   const newcomer = isNewcomer(entry)
   const stale = isStale(entry)
+  const version = entry.version || null
+  const publishedWhen = entry.publishedAt ? formatWhen(entry.publishedAt) : null
+  const sizeLabel = formatSize(entry.repoSizeKb)
+  const removeCmd = installedModuleName ? `dsh plugin --profile web remove ${installedModuleName}` : null
+  const identifier = entry.installCmd ? /github:[^"\s]+/.exec(entry.installCmd)?.[0] : null
 
   return (
     <div style={{ ...css.card, ...(installed ? css.cardInstalled : null) }}>
@@ -568,14 +580,31 @@ function PluginCard({ entry, installedPhase, expanded, onToggleExpanded, onTopic
 
       <div style={css.actions}>
         <CopyButton text={cmd} />
+        {removeCmd ? <CopyButton text={removeCmd} /> : null}
       </div>
 
       {expanded ? (
         <div style={css.detail}>
-          <DetailRow label="安装">
-            <code style={css.cmdBlock}>{cmd}</code>
+          <div style={{ ...css.detailRow, color: 'var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary))', fontSize: '11px', marginBottom: '2px' }}>
+            {installed
+              ? `已安装（${installedModuleName || '未知包名'}）。重启 / 禁用 / 卸载也可在 设置 → 插件 操作。`
+              : '安装 / 卸载 / 禁用 / 重启：让 agent 执行，或在 设置 → 插件 操作。'}
+          </div>
+          <DetailRow label="标识符">
+            <code style={css.cmdBlock}>{identifier || cmd}</code>
           </DetailRow>
-          <DetailRow label="分类">{entry.category || 'other'}</DetailRow>
+          <DetailRow label="版本">
+            {version ? <span>{version}</span> : <span style={{ opacity: 0.6 }}>—（待审计）</span>}
+          </DetailRow>
+          <DetailRow label="上次更新">
+            {entry.updatedAt ? `${String(entry.updatedAt).slice(0, 10)}（${when || '未知'}）` : '未知'}
+          </DetailRow>
+          <DetailRow label="发布">
+            {entry.publishedAt ? `${String(entry.publishedAt).slice(0, 10)}（${publishedWhen || '未知'}）` : '—（待审计）'}
+          </DetailRow>
+          <DetailRow label="大小">
+            {sizeLabel ? <span>约 {sizeLabel}（仓库体积）</span> : '—（待审计）'}
+          </DetailRow>
           <DetailRow label="许可证">{entry.license || '未声明'}</DetailRow>
           {entry.tier ? (
             <DetailRow label="信任核验">
@@ -591,21 +620,23 @@ function PluginCard({ entry, installedPhase, expanded, onToggleExpanded, onTopic
               ) : null}
             </DetailRow>
           ) : null}
-          <DetailRow label="更新">
-            {entry.updatedAt ? `${String(entry.updatedAt).slice(0, 10)}（${formatWhen(entry.updatedAt) || '未知'}）` : '未知'}
-          </DetailRow>
-          {entry.homepage ? (
-            <DetailRow label="主页">
-              <a style={{ ...css.repoLink, fontSize: '12px' }} href={entry.homepage} target="_blank" rel="noreferrer">
-                {entry.homepage}
+          <DetailRow label="扩展资源">
+            <span style={{ display: 'inline-flex', gap: '10px', flexWrap: 'wrap' }}>
+              <a style={{ ...css.repoLink, fontSize: '12px' }} href={entry.url} target="_blank" rel="noreferrer">
+                仓库
                 <IconRightUpOutline14 size={11} />
               </a>
-            </DetailRow>
-          ) : null}
+              {entry.homepage ? (
+                <a style={{ ...css.repoLink, fontSize: '12px' }} href={entry.homepage} target="_blank" rel="noreferrer">
+                  主页
+                  <IconRightUpOutline14 size={11} />
+                </a>
+              ) : null}
+              <span style={{ color: 'var(--dsw-alias-label-secondary)', fontSize: '12px' }}>许可证：{entry.license || '未声明'}</span>
+            </span>
+          </DetailRow>
           <div style={{ ...css.detailRow, color: 'var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary))', fontSize: '11px' }}>
-            {installed
-              ? '已在当前 profile 中；升级用 dsh plugin 重新 add，管理见 设置 → 插件。'
-              : '复制命令到终端执行；或在对话里说「安装 github:owner/repo」，agent 会先核验 manifest 与安装脚本风险，再经你确认执行。'}
+            自动更新：目录数据每日自动刷新；bundle 升级请重新执行安装命令（{identifier || cmd}）。
           </div>
         </div>
       ) : null}
@@ -706,6 +737,16 @@ export function HubView({ listInstalled }) {
       if (installed.has(entry.fullName)) return installed.get(entry.fullName)
       const repo = String(entry.fullName).split('/')[1] || ''
       return installed.has(repo) ? installed.get(repo) : undefined
+    },
+    [installed],
+  )
+
+  const moduleNameOf = useCallback(
+    (entry) => {
+      if (installed === null) return undefined
+      if (installed.has(entry.fullName)) return entry.fullName
+      const repo = String(entry.fullName).split('/')[1] || ''
+      return installed.has(repo) ? repo : undefined
     },
     [installed],
   )
@@ -925,6 +966,7 @@ export function HubView({ listInstalled }) {
                     key={entry.fullName}
                     entry={entry}
                     installedPhase={phaseOf(entry)}
+                    installedModuleName={moduleNameOf(entry)}
                     expanded={expandedKey === entry.fullName}
                     onToggleExpanded={() => setExpandedKey((k) => (k === entry.fullName ? null : entry.fullName))}
                     onTopicClick={onTopicClick}

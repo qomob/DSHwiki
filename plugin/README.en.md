@@ -13,7 +13,7 @@ Discover, evaluate, and **install** community plugins right inside dsh (DeepSeek
   - Search (Chinese/English + topics), 16 categories, relevance / stars / recently-updated / **new listings** sorting
   - **Installed state** — reads the current profile's loader inventory via the official `pluginInventory` remote: green "Installed" badges on cards (with a runtime-status dot), an "Installed" sidebar filter row, and an "Installed · not in catalog" health list (community bundles + running/failed status)
   - **Trust signals** — "New" badge (listed within 14 days; `firstSeenAt` preserved across syncs), "Stale" warning (untouched for a year), official badge, language color dots
-  - One-click copy of the install command; the detail panel points to the agent-assisted install path (verification + approval)
+  - **VS Code-style detail panel**: identifier (install spec) / version / last updated / published / size (repo size) / license / extension resources (repo·homepage·license) / auto-update note; one-click copy of the uninstall command when installed; trust signals listed individually
   - Offline embedded snapshot + on-open online refresh (jsDelivr → raw mirrors) + manual refresh
 
 Data comes from three layers:

@@ -34,6 +34,10 @@ async function main() {
       entry.tier = result.tier
       entry.auditAt = result.auditAt
       entry.riskSignals = result.signals
+      // VS Code-style detail data from the same pass (best effort).
+      if (manifest?.version) entry.version = String(manifest.version).slice(0, 40)
+      if (repo?.created_at) entry.publishedAt = repo.created_at
+      if (typeof repo?.size === 'number' && repo.size > 0) entry.repoSizeKb = repo.size
       audited += 1
     } catch (e) {
       // Keep previous tier on transient failures; decisive facts only downgrade.

@@ -147,6 +147,9 @@ export function projectEntry(entry) {
   if (entry.license) out.license = entry.license
   if (entry.tier) out.tier = entry.tier
   if (entry.auditAt) out.auditAt = entry.auditAt
+  if (entry.version) out.version = entry.version
+  if (entry.publishedAt) out.publishedAt = entry.publishedAt
+  if (entry.repoSizeKb) out.repoSizeKb = entry.repoSizeKb
   if (Array.isArray(entry.riskSignals) && entry.riskSignals.length > 0) out.riskSignals = entry.riskSignals
   return out
 }

@@ -129,6 +129,9 @@ const entryOutputProperties = {
   tier: { type: 'string' },
   auditAt: { type: 'string' },
   riskSignals: { type: 'array', items: { type: 'string' } },
+  version: { type: 'string' },
+  publishedAt: { type: 'string' },
+  repoSizeKb: { type: 'integer' },
 }
 
 const entryOutputSchema = {
