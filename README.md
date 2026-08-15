@@ -1,8 +1,10 @@
 <div align="center">
 
-<h1>DSH 工坊 · 装点你的 Agent</h1>
+<h1>DSH 工坊 · 一切皆为插件，即刻装备你的DSH</h1>
 
 <p>围绕 <a href="https://github.com/deepseek-ai/deepseek-harness">DeepSeek Harness (dsh)</a> 的中文社区角落</p>
+
+<p><b>简体中文</b> · <a href="README.en.md">English</a></p>
 
 <p>
   <a href="https://github.com/deepseek-ai/deepseek-harness"><img src="https://img.shields.io/badge/dsh-Agent%20Framework-6799fe" alt="dsh" /></a>
@@ -164,7 +166,7 @@ npm run aggregate
 - **相关性过滤** — 描述必须真正提到 dsh / DeepSeek Harness，剔除蹭流量项目
 - **schema 校验** — 写入前断言 `repos` 非空、必填字段齐全、URL 合法，不合法则中止（保护上次好数据）
 - **翻译降级** — 无 LLM key 时优雅保留原文，不阻塞流程
-- **单元测试** — 分类/评分/提取/格式化等纯函数均有测试覆盖（27 个用例）
+- **单元测试** — 分类/评分/提取/格式化等纯函数均有测试覆盖（36 个用例）
 
 ---
 
@@ -242,7 +244,7 @@ location = /index.html {                # 入口不缓存
 ### 部署检查清单
 
 - [ ] `npm run build` 通过
-- [ ] `npm test` 全绿（27 个测试）
+- [ ] `npm test` 全绿（36 个测试）
 - [ ] `src/data/repos.json` 非空且 `generatedAt` 是近期时间戳
 - [ ] 部署后确认 `https://你的域名/robots.txt` 和 `/sitemap.xml` 正常返回
 - [ ] 静态托管层已配置 SPA fallback
@@ -346,6 +348,6 @@ npm test && npm run lint && npm run build   # 确保全绿再提交
 
 **MIT License · © 2026 Qomob.AI**
 
- Build in public · 装点你的 Agent
+ Build in public · 一切皆为插件，即刻装备你的DSH
 
 </div>

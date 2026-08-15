@@ -2,7 +2,7 @@
 export const UI = {
   zh: {
     nav: { wiki: 'Wiki', plugins: '插件', ranking: '热榜', about: '关于' },
-    brand: { name: 'DSH 工坊', tagline: '装点你的 Agent' },
+    brand: { name: 'DSH 工坊', tagline: '一切皆为插件，即刻装备你的DSH' },
     hero: {
       badge: 'DeepSeek Harness 社区镜像',
       title: '给 DSH 挑趁手的装备',
@@ -84,7 +84,7 @@ export const UI = {
   },
   en: {
     nav: { wiki: 'Wiki', plugins: 'Plugins', ranking: 'Top', about: 'About' },
-    brand: { name: 'DSH Workshop', tagline: 'Gear up your agent' },
+    brand: { name: 'DSH Workshop', tagline: 'Everything is a plugin — equip your DSH now' },
     hero: {
       badge: 'DeepSeek Harness Community',
       title: 'Hand-picked gear for DSH',

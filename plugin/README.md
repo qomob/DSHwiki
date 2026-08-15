@@ -1,5 +1,7 @@
 # dsh-plugin-hub
 
+> **简体中文** · [English](README.en.md)
+
 在 dsh（DeepSeek Harness）里直接发现、评估并**安装**社区插件：
 
 - **`plugin_search`** — 按关键词 / 分类检索 dsh 社区插件生态，返回简介、星标、分类、仓库链接与**安装命令**。
@@ -51,7 +53,7 @@ dsh plugin --profile myhub add ./plugin
 
 # tarball（无需任何构建权限，适合离线分发）
 cd plugin && pnpm pack
-dsh plugin --profile myhub add ./dsh-plugin-hub-0.1.0.tgz
+dsh plugin --profile myhub add ./dsh-plugin-hub-0.1.1.tgz
 
 # 若已发布到 npm
 dsh plugin --profile myhub add dsh-plugin-hub
