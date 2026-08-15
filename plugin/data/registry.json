@@ -1,13 +1,13 @@
 {
- "generatedAt": "2026-08-15T22:26:22.519Z",
+ "generatedAt": "2026-08-15T22:31:49.586Z",
  "source": "DSHwiki aggregation pipeline (https://dsh.qomob.ai)",
  "count": 832,
  "plugins": [
   {
    "fullName": "deepseek-ai/deepseek-harness",
    "description": "DeepSeek Harness: Everything is a Plugin.",
-   "stars": 114607,
-   "updatedAt": "2026-08-15T22:21:42Z",
+   "stars": 114633,
+   "updatedAt": "2026-08-15T22:28:08Z",
    "category": "core",
    "topics": [
     "ai-agents",
@@ -28,8 +28,8 @@
   {
    "fullName": "anywhere-labs/deepseek-harness-desktop",
    "description": "为 DeepSeek Harness (DSH) 生态打造的现代化桌面端体验",
-   "stars": 5758,
-   "updatedAt": "2026-08-15T22:16:24Z",
+   "stars": 5764,
+   "updatedAt": "2026-08-15T22:26:23Z",
    "category": "extension",
    "topics": [
     "deepseek",
@@ -73,8 +73,8 @@
   {
    "fullName": "awesome-dsh-plugin/awesome-dsh-plugin",
    "description": "A curated list of plugins for DeepSeek Harness (dsh) · DeepSeek Harness 插件精选列表",
-   "stars": 2968,
-   "updatedAt": "2026-08-15T22:10:31Z",
+   "stars": 2969,
+   "updatedAt": "2026-08-15T22:25:52Z",
    "category": "awesome",
    "topics": [
     "awesome",
@@ -223,8 +223,8 @@
   {
    "fullName": "zhu1090093659/dsh-web-ui",
    "description": "Plugin and skin collection for DeepSeek Harness (DSH) Web UI - task board, git graph, right-side panel, remote mobile UI, pet, live token stats, and skin center.",
-   "stars": 2691,
-   "updatedAt": "2026-08-15T21:45:34Z",
+   "stars": 2692,
+   "updatedAt": "2026-08-15T22:24:06Z",
    "category": "skin",
    "topics": [
     "deepseek-harness",
@@ -359,10 +359,34 @@
    "installCmd": "dsh plugin add \"github:nexu-io/open-design\"",
    "url": "https://github.com/nexu-io/open-design",
    "firstSeenAt": "2026-08-15T22:01:06Z",
-   "descriptionZh": "🎨 开源版 Claude Design 替代方案。🖥️ 本地优先的桌面应用。🖼️ 你的编码代理成为设计引擎：原型、落地页、仪表盘、幻灯片、图片与视频——真实文件，支持 HTML/PDF/PPTX/MP4 导出。🤖 通过 BYOK 接入 Claude Code / Codex / Cursor / DeepSeek Harness / OpenCode / Hermes 及 20+ 命令行工具。",
+   "descriptionZh": "🎨 开源 Claude 设计替代方案。🖥️ 本地优先的桌面应用。🖼️ 你的编码代理成为设计引擎：原型、落地页、仪表盘、幻灯片、图片与视频——真实文件，支持 HTML/PDF/PPTX/MP4 导出。🤖 通过 BYOK 集成 Claude Code / Codex / Cursor / DeepSeek Harness / OpenCode / Hermes 及 20+ 命令行工具。",
    "homepage": "https://open-design.ai",
    "language": "TypeScript",
    "license": "Apache-2.0"
+  },
+  {
+   "fullName": "chokwinlee/deepseek-harness-desktop",
+   "description": "Compact DeepSeek Harness desktop host. macOS downloads under 90 MB with Tauri; Windows uses Electron.",
+   "stars": 7,
+   "updatedAt": "2026-08-15T22:27:34Z",
+   "category": "extension",
+   "topics": [
+    "ai-agents",
+    "coding-agent",
+    "cross-platform",
+    "deepseek",
+    "deepseek-harness",
+    "desktop",
+    "desktop-app",
+    "dsh"
+   ],
+   "official": false,
+   "installType": "plugin",
+   "installCmd": "dsh plugin add \"github:chokwinlee/deepseek-harness-desktop\"",
+   "url": "https://github.com/chokwinlee/deepseek-harness-desktop",
+   "firstSeenAt": "2026-08-15T19:20:08Z",
+   "language": "Rust",
+   "license": "MIT"
   },
   {
    "fullName": "openma-ai/deepseek-harness-acp",
@@ -453,30 +477,6 @@
    "url": "https://github.com/beancookie/dsh-plugin-anydoc",
    "firstSeenAt": "2026-08-14T08:37:09Z",
    "language": "JavaScript"
-  },
-  {
-   "fullName": "chokwinlee/deepseek-harness-desktop",
-   "description": "Compact DeepSeek Harness desktop host. macOS downloads under 90 MB with Tauri; Windows uses Electron.",
-   "stars": 6,
-   "updatedAt": "2026-08-15T19:20:08Z",
-   "category": "extension",
-   "topics": [
-    "ai-agents",
-    "coding-agent",
-    "cross-platform",
-    "deepseek",
-    "deepseek-harness",
-    "desktop",
-    "desktop-app",
-    "dsh"
-   ],
-   "official": false,
-   "installType": "plugin",
-   "installCmd": "dsh plugin add \"github:chokwinlee/deepseek-harness-desktop\"",
-   "url": "https://github.com/chokwinlee/deepseek-harness-desktop",
-   "firstSeenAt": "2026-08-15T19:20:08Z",
-   "language": "Rust",
-   "license": "MIT"
   },
   {
    "fullName": "hi-wenw/dsh-telegram-channel",
@@ -570,6 +570,28 @@
    "language": "JavaScript"
   },
   {
+   "fullName": "omdsh-dev/DSH-better-sidebar",
+   "description": "一个侧边栏的完整工作台，支持三方拓展注册新侧边栏页面。内置文件渲染编辑/终端/Git/子代理",
+   "stars": 1254,
+   "updatedAt": "2026-08-15T22:23:16Z",
+   "category": "terminal",
+   "topics": [
+    "deepseek",
+    "deepseek-harness",
+    "dsh",
+    "dsh-better-sidebar",
+    "dsh-plugin",
+    "sidebar"
+   ],
+   "official": false,
+   "installType": "plugin",
+   "installCmd": "dsh plugin add \"github:omdsh-dev/DSH-better-sidebar\"",
+   "url": "https://github.com/omdsh-dev/DSH-better-sidebar",
+   "firstSeenAt": "2026-08-14T09:58:30Z",
+   "language": "TypeScript",
+   "license": "MIT"
+  },
+  {
    "fullName": "ccch1mneyyy/dsh-TUI",
    "description": "解决DSH 官方尚无终端 TUI 痛点的补位之作，献给偏爱cli的各位极客：Claude Code 风格全屏交互终端插件——像素鲸鱼顶栏、实时工作状态行、思考流式展开、双击 Esc 回滚、上下文进度条 + TPS 仪表。npm 一键安装。",
    "stars": 1254,
@@ -590,28 +612,6 @@
    "installCmd": "dsh plugin add \"github:ccch1mneyyy/dsh-TUI\"",
    "url": "https://github.com/ccch1mneyyy/dsh-TUI",
    "firstSeenAt": "2026-08-14T09:57:28Z",
-   "language": "TypeScript",
-   "license": "MIT"
-  },
-  {
-   "fullName": "omdsh-dev/DSH-better-sidebar",
-   "description": "一个侧边栏的完整工作台，支持三方拓展注册新侧边栏页面。内置文件渲染编辑/终端/Git/子代理",
-   "stars": 1253,
-   "updatedAt": "2026-08-15T21:15:57Z",
-   "category": "terminal",
-   "topics": [
-    "deepseek",
-    "deepseek-harness",
-    "dsh",
-    "dsh-better-sidebar",
-    "dsh-plugin",
-    "sidebar"
-   ],
-   "official": false,
-   "installType": "plugin",
-   "installCmd": "dsh plugin add \"github:omdsh-dev/DSH-better-sidebar\"",
-   "url": "https://github.com/omdsh-dev/DSH-better-sidebar",
-   "firstSeenAt": "2026-08-14T09:58:30Z",
    "language": "TypeScript",
    "license": "MIT"
   },
@@ -707,7 +707,7 @@
    "fullName": "MicroMilo/upstream-radar",
    "description": "DSH plugin security and dependency monitoring for DeepSeek Harness: exact vulnerable paths, breaking updates, and Agent follow-up.",
    "stars": 4,
-   "updatedAt": "2026-08-15T22:04:06Z",
+   "updatedAt": "2026-08-15T22:29:10Z",
    "category": "toolset",
    "topics": [
     "agent-security",
@@ -1381,8 +1381,8 @@
   {
    "fullName": "sandbaseai/sandbase-harness",
    "description": "Open-source CMA-compatible agent runtime for any model, with MCP tools, sandboxed sessions, audit, replay, and a local console. Includes a native DeepSeek Harness bundle over stdio MCP.",
-   "stars": 590,
-   "updatedAt": "2026-08-15T18:06:47Z",
+   "stars": 591,
+   "updatedAt": "2026-08-15T22:27:22Z",
    "category": "memory",
    "topics": [
     "agent-framework",
@@ -1399,7 +1399,7 @@
    "installCmd": "dsh plugin add \"github:sandbaseai/sandbase-harness\"",
    "url": "https://github.com/sandbaseai/sandbase-harness",
    "firstSeenAt": "2026-08-14T08:12:50Z",
-   "descriptionZh": "开源、兼容CMA的智能体运行时，支持任意模型，集成MCP工具、沙箱会话、审计、回放及本地控制台。内置原生DeepSeek Harness套件，通过stdio MCP连接。",
+   "descriptionZh": "开源、兼容CMA的智能体运行时，适用于任意模型，集成MCP工具、沙箱会话、审计、回放及本地控制台。内含基于stdio MCP的原生DeepSeek Harness套件。",
    "homepage": "https://github.com/sandbaseai/sandbase-harness/releases/latest",
    "language": "TypeScript",
    "license": "Apache-2.0"
@@ -2178,7 +2178,7 @@
    "installCmd": "dsh plugin add \"github:Devin-AXIS/iPolloWork\"",
    "url": "https://github.com/Devin-AXIS/iPolloWork",
    "firstSeenAt": "2026-08-14T09:55:37Z",
-   "descriptionZh": "下一代、源码可用的AI工作空间，具备自进化代理运行时，支持可编辑代码、设计、演示文稿、网站和视频——作为Codex的替代方案，集成DeepSeek Harness进行子代理委派，将iPolloWork的完整AI工作台与DSH的专用代理及双方插件生态系统融合于单一工作流中。",
+   "descriptionZh": "下一代、源码可用的AI工作空间，配备自进化代理运行时，支持可编辑代码、设计、演示文稿、网站和视频——作为Codex的替代方案，集成DeepSeek Harness进行子代理委派，将iPolloWork的完整AI工作台与DSH的专用代理及双方插件生态系统融合于单一工作流中。",
    "homepage": "https://www.ipollo.ai/",
    "language": "HTML",
    "license": "NOASSERTION"
@@ -2301,8 +2301,8 @@
   {
    "fullName": "xiaobright/dsh-anchored-standard",
    "description": "Two-phase DeepSeek Harness preset: Minimal-aligned bootstrap, then full Standard tools (Project2 98/99)",
-   "stars": 2157,
-   "updatedAt": "2026-08-15T22:15:40Z",
+   "stars": 2158,
+   "updatedAt": "2026-08-15T22:24:13Z",
    "category": "toolset",
    "topics": [
     "deepseek",
@@ -2315,7 +2315,7 @@
    "installCmd": "dsh plugin add \"github:xiaobright/dsh-anchored-standard\"",
    "url": "https://github.com/xiaobright/dsh-anchored-standard",
    "firstSeenAt": "2026-08-15T01:00:59Z",
-   "descriptionZh": "两阶段 DeepSeek 工具集预设：先进行最小对齐引导，再启用完整标准工具（项目2 98/99）",
+   "descriptionZh": "两阶段 DeepSeek 工具集预设：最小对齐引导，随后完整标准工具（项目2 98/99）",
    "homepage": "https://github.com/xiaobright/modeltest",
    "language": "JavaScript",
    "license": "NOASSERTION"
@@ -2586,8 +2586,8 @@
   {
    "fullName": "whyihaveyou/dsh-suite",
    "description": "The living DeepSeek Harness plugin directory — refreshed hourly, compat-tested daily, with an in-app plugin store and scaffolder. DSH 插件活目录：每小时刷新，每日兼容实测，内置插件商店与脚手架。",
-   "stars": 28,
-   "updatedAt": "2026-08-15T21:36:36Z",
+   "stars": 29,
+   "updatedAt": "2026-08-15T22:28:17Z",
    "category": "awesome",
    "topics": [
     "agent-framework",
@@ -3333,8 +3333,8 @@
   {
    "fullName": "liustack/modlens",
    "description": "The first vision plugin for DeepSeek Harness, and the vision bridge for every text-only coding agent. Paste an image, get structured JSON evidence (OCR, layout, semantics). | 全网第一个 DeepSeek Harness 视觉插件，为 DeepSeek、GLM 等纯文本模型外挂视觉能力，粘贴图片即得结构化 JSON 证据（OCR、版面、语义）。",
-   "stars": 1897,
-   "updatedAt": "2026-08-15T22:21:47Z",
+   "stars": 1898,
+   "updatedAt": "2026-08-15T22:26:33Z",
    "category": "vision",
    "topics": [
     "agent-skills",
@@ -3561,7 +3561,7 @@
    "fullName": "Fishsb/dsh-prompt-enhancer",
    "description": "DeepSeek Harness DSH 提示词增强插件：✨ 一键优化草稿，增强提示词。",
    "stars": 7,
-   "updatedAt": "2026-08-15T22:21:09Z",
+   "updatedAt": "2026-08-15T22:29:00Z",
    "category": "engineering",
    "topics": [
     "deepseek",
@@ -6817,7 +6817,7 @@
    "installCmd": "dsh plugin add \"github:Ruler4396/dsh-launcher\"",
    "url": "https://github.com/Ruler4396/dsh-launcher",
    "firstSeenAt": "2026-08-14T09:58:59Z",
-   "descriptionZh": "DeepSeek Harness 的轻量级 Windows 启动器：登录时静默自启动 + 极简 WebView2 窗口，替代完整浏览器",
+   "descriptionZh": "DeepSeek Harness 的轻量级 Windows 启动器：登录时静默自启动 + 使用极简 WebView2 窗口替代完整浏览器",
    "language": "C#",
    "license": "MIT"
   },
@@ -10243,7 +10243,7 @@
    "installCmd": "dsh plugin add \"github:PM-Shawn/Abu-Cowork\"",
    "url": "https://github.com/PM-Shawn/Abu-Cowork",
    "firstSeenAt": "2026-08-14T07:58:24Z",
-   "descriptionZh": "开源替代 Claude Cowork 的本地优先 AI 智能体桌面应用 · 多模型 · 自进化技能 · 隐私优先 · 多 Harness 路线图 · DeepSeek Harness 集成进行中",
+   "descriptionZh": "开源替代 Claude Cowork 的本地优先 AI 智能体桌面应用 · 多模型支持 · 技能自进化 · 隐私优先 · 多 Harness 路线图 · DeepSeek Harness 集成进行中",
    "homepage": "https://myabu.cn",
    "language": "TypeScript",
    "license": "NOASSERTION"
@@ -10251,8 +10251,8 @@
   {
    "fullName": "omdsh-dev/dsh-at-file",
    "description": "Codex-style @file mentions for DeepSeek Harness: search workspace files in the composer and attach their contents to prompts.",
-   "stars": 220,
-   "updatedAt": "2026-08-15T20:22:26Z",
+   "stars": 221,
+   "updatedAt": "2026-08-15T22:24:19Z",
    "category": "extension",
    "topics": [
     "dsh",
@@ -12417,7 +12417,7 @@
    "installCmd": "dsh plugin add \"github:crafter-station/petdex\"",
    "url": "https://github.com/crafter-station/petdex",
    "firstSeenAt": "2026-08-15T01:00:03Z",
-   "descriptionZh": "Codex、Claude Code、DeepSeek Harness、Hermes、OpenCode、Gemini CLI 等工具的动画宠物公共画廊。",
+   "descriptionZh": "面向 Codex、Claude Code、DeepSeek Harness、Hermes、OpenCode、Gemini CLI 等工具的动画宠物公共画廊。",
    "homepage": "https://petdex.dev",
    "language": "TypeScript",
    "license": "MIT"
