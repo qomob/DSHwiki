@@ -1,16 +1,15 @@
 // dsh-plugin-hub client half — the "插件" marketplace tab in the Web UI's
 // conversation view ring (after 对话/轨迹).
 //
-// Marketplace behavior:
-//   · catalog from the embedded snapshot (offline) + on-open online refresh
-//     (jsDelivr → raw mirrors) + manual refresh
-//   · INSTALLED state via the official pluginInventory remote (the same API
-//     the settings page uses): badges, an "已安装" filter, and a health list
-//     of community bundles installed but not tracked by the catalog
-//   · "新上架" sort + new badges driven by firstSeenAt, and a staleness
-//     warning for repos not updated in over a year
-//   · install = copy the command; agent-assisted install is one message away
-//     (plugin_install verifies the manifest + install scripts, then asks)
+// Layout mirrors dsh.qomob.ai's plugin hub: a sticky left category sidebar
+// (color dot + label + mono count, card container) beside a right column
+// whose top row holds search / sort / refresh and whose body is the card
+// flow. Collapses to a single column with a horizontal category strip via
+// container queries on narrow viewports.
+//
+// Marketplace behavior: embedded snapshot (offline) + on-open refresh
+// (jsDelivr → raw) + installed state via the official pluginInventory
+// remote + firstSeenAt-driven 新上架 / staleness signals.
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import {
@@ -30,23 +29,24 @@ import {
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import registryData from '../data/registry.json'
 
+// Category taxonomy with the site's color system (dsh.qomob.ai sidebar dots).
 const CATEGORIES = [
-  { id: 'all', label: '全部' },
-  { id: 'core', label: '原厂核心' },
-  { id: 'orchestration', label: 'Agent 编排' },
-  { id: 'interface', label: '界面交互' },
-  { id: 'terminal', label: '终端 TUI' },
-  { id: 'skin', label: '主题皮肤' },
-  { id: 'vision', label: '感知视觉' },
-  { id: 'memory', label: '记忆检索' },
-  { id: 'workflow', label: '工作流' },
-  { id: 'communication', label: '通讯通知' },
-  { id: 'engineering', label: '工程运维' },
-  { id: 'toolset', label: '通用工具' },
-  { id: 'skill', label: 'Skill 技能' },
-  { id: 'awesome', label: '精选清单' },
-  { id: 'extension', label: '扩展生态' },
-  { id: 'other', label: '其他' },
+  { id: 'all', label: '全部', color: '#4d6bfe' },
+  { id: 'core', label: '原厂核心', color: '#f5b942' },
+  { id: 'orchestration', label: 'Agent 编排', color: '#a78bfa' },
+  { id: 'interface', label: '界面交互', color: '#22d3ee' },
+  { id: 'terminal', label: '终端 TUI', color: '#34d399' },
+  { id: 'skin', label: '主题皮肤', color: '#fb7185' },
+  { id: 'vision', label: '感知视觉', color: '#f59e0b' },
+  { id: 'memory', label: '记忆检索', color: '#60a5fa' },
+  { id: 'workflow', label: '工作流', color: '#c084fc' },
+  { id: 'communication', label: '通讯通知', color: '#2dd4bf' },
+  { id: 'engineering', label: '工程运维', color: '#94a3b8' },
+  { id: 'toolset', label: '通用工具', color: '#facc15' },
+  { id: 'skill', label: 'Skill 技能', color: '#f472b6' },
+  { id: 'awesome', label: '精选清单', color: '#e879f9' },
+  { id: 'extension', label: '扩展生态', color: '#818cf8' },
+  { id: 'other', label: '其他', color: '#64748b' },
 ]
 
 const LANGUAGE_COLORS = {
@@ -184,61 +184,49 @@ const PHASE_LABELS = {
 }
 
 // --- styles ----------------------------------------------------------------
+// Structural styles live in a class sheet (injected per mount; identical
+// rules are harmless) because hover/active and container queries cannot be
+// expressed as inline styles. Colors come from --dsw-alias-* tokens so the
+// tab follows the shell theme; narrow viewports collapse the sidebar into a
+// horizontal strip via the hub container query.
+
+const STYLE_SHEET = `
+.hub-root { container-type: inline-size; container-name: hub; height: 100%; display: flex; flex-direction: column; background: var(--dsw-alias-bg-base); color: var(--dsw-alias-label-primary); font-family: inherit; min-height: 0; }
+.hub-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 20px 8px; }
+.hub-layout { display: grid; grid-template-columns: 172px minmax(0, 1fr); gap: 16px; max-width: 980px; margin: 0 auto; }
+.hub-side { position: sticky; top: 0; align-self: start; max-height: calc(100vh - 130px); overflow-y: auto; scrollbar-width: thin; }
+.hub-side-card { border: 1px solid var(--dsw-alias-border-l1); background: var(--dsw-alias-bg-layer-1); border-radius: 12px; padding: 10px; }
+.hub-side-label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; color: var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary)); padding: 2px 6px 8px; }
+.hub-side-nav { display: flex; flex-direction: column; gap: 1px; }
+.hub-cat { display: flex; align-items: center; gap: 8px; width: 100%; padding: 5px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--dsw-alias-label-secondary); font-size: 12px; text-align: left; cursor: pointer; transition: background .12s ease, color .12s ease; }
+.hub-cat:hover { background: var(--dsw-alias-bg-layer-2); color: var(--dsw-alias-label-primary); }
+.hub-cat.active { background: var(--dsw-alias-bg-layer-2); color: var(--dsw-alias-label-primary); font-weight: 600; }
+.hub-cat-dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; display: inline-block; }
+.hub-cat-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hub-cat-count { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; color: var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary)); }
+.hub-cat.active .hub-cat-count { color: var(--dsw-alias-label-secondary); }
+.hub-side-sep { height: 1px; background: var(--dsw-alias-border-l1); margin: 8px 4px; }
+.hub-toolbar { display: flex; gap: 8px; align-items: center; max-width: 980px; margin: 0 auto 10px; width: 100%; box-sizing: border-box; padding: 0 20px; }
+.hub-search { flex: 1 1 240px; min-width: 200px; display: flex; }
+.hub-select { padding: 0 8px; height: 28px; border-radius: 999px; border: 1px solid var(--dsw-alias-border-l1); background: var(--dsw-alias-bg-layer-1); color: var(--dsw-alias-label-secondary); font-size: 12px; cursor: pointer; }
+.hub-meta { font-size: 11.5px; color: var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary)); margin: 0 0 10px; }
+.hub-list { display: flex; flex-direction: column; gap: 8px; }
+.hub-more { display: flex; justify-content: center; margin: 14px 0 6px; }
+.hub-sec { font-size: 12px; font-weight: 600; color: var(--dsw-alias-label-secondary); margin: 18px 0 8px; display: flex; align-items: center; gap: 6px; }
+.hub-footer { display: flex; align-items: center; gap: 8px; justify-content: center; padding: 10px 0 18px; font-size: 11px; color: var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary)); flex-wrap: wrap; }
+@container hub (max-width: 680px) {
+  .hub-layout { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .hub-side { position: static; max-height: none; overflow: visible; }
+  .hub-side-card { padding: 8px; }
+  .hub-side-nav { display: flex; flex-direction: row; gap: 4px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+  .hub-cat { width: auto; flex: 0 0 auto; padding: 4px 8px; }
+  .hub-cat-count { display: none; }
+  .hub-side-sep { display: none; }
+}
+@keyframes dsh-plugin-hub-spin { to { transform: rotate(360deg) } }
+`
 
 const css = {
-  page: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    background: 'var(--dsw-alias-bg-base)',
-    color: 'var(--dsw-alias-label-primary)',
-    fontFamily: 'inherit',
-    minHeight: 0,
-  },
-  scroll: {
-    flex: 1,
-    minHeight: 0,
-    overflowY: 'auto',
-    padding: '16px 24px 8px',
-  },
-  inner: { maxWidth: '880px', margin: '0 auto' },
-  toolbar: {
-    display: 'flex',
-    gap: '8px',
-    alignItems: 'center',
-    padding: '0 24px 10px',
-    maxWidth: '880px',
-    margin: '0 auto',
-    width: '100%',
-    boxSizing: 'border-box',
-  },
-  searchWrap: { flex: '1 1 240px', minWidth: '200px', display: 'flex' },
-  select: {
-    padding: '0 8px',
-    height: '28px',
-    borderRadius: '999px',
-    border: '1px solid var(--dsw-alias-border-l1)',
-    background: 'var(--dsw-alias-bg-layer-1)',
-    color: 'var(--dsw-alias-label-secondary)',
-    fontSize: '12px',
-    cursor: 'pointer',
-  },
-  chips: {
-    display: 'flex',
-    gap: '6px',
-    overflowX: 'auto',
-    paddingBottom: '2px',
-    scrollbarWidth: 'thin',
-    alignItems: 'center',
-  },
-  chipRowWrap: { padding: '0 24px 12px', maxWidth: '880px', margin: '0 auto', width: '100%', boxSizing: 'border-box' },
-  chipDivider: { flex: '0 0 1px', height: '18px', background: 'var(--dsw-alias-border-l2)', margin: '0 2px' },
-  resultMeta: {
-    fontSize: '11.5px',
-    color: 'var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary))',
-    margin: '0 0 10px',
-  },
-  list: { display: 'flex', flexDirection: 'column', gap: '8px' },
   card: {
     padding: '12px 14px',
     borderRadius: '10px',
@@ -346,15 +334,6 @@ const css = {
   centerIcon: { opacity: 0.5 },
   centerTitle: { fontSize: '13.5px', fontWeight: 600, color: 'var(--dsw-alias-label-primary)' },
   centerHint: { fontSize: '12px', textAlign: 'center', lineHeight: 1.6 },
-  sectionTitle: {
-    fontSize: '12px',
-    fontWeight: 600,
-    color: 'var(--dsw-alias-label-secondary)',
-    margin: '18px 0 8px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-  },
   moduleRow: {
     display: 'flex',
     alignItems: 'center',
@@ -367,16 +346,9 @@ const css = {
     flexWrap: 'wrap',
   },
   phaseDot: { width: '7px', height: '7px', borderRadius: '50%', display: 'inline-block', flex: '0 0 auto' },
-  footer: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    justifyContent: 'center',
-    padding: '10px 0 18px',
-    fontSize: '11px',
-    color: 'var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary))',
-  },
-  moreWrap: { display: 'flex', justifyContent: 'center', margin: '14px 0 6px' },
+  secHint: { fontWeight: 400, fontSize: '11px' },
+  warnInline: { display: 'inline-flex', alignItems: 'center', gap: '3px', color: 'var(--dsw-alias-state-warn-primary)' },
+  metaDot: { display: 'inline-block', verticalAlign: 'middle', marginRight: '5px', borderRadius: '50%', width: '8px', height: '8px' },
 }
 
 // --- components ------------------------------------------------------------
@@ -546,6 +518,17 @@ function CenterState({ icon, title, hint, action }) {
   )
 }
 
+// One sidebar navigation row: color dot + label + mono count (site pattern).
+function CategoryButton({ label, color, count, active, onClick, title }) {
+  return (
+    <button type="button" className={`hub-cat${active ? ' active' : ''}`} onClick={onClick} aria-current={active ? 'true' : undefined} title={title}>
+      <span className="hub-cat-dot" style={{ background: color }} />
+      <span className="hub-cat-name">{label}</span>
+      {count !== undefined ? <span className="hub-cat-count">{count}</span> : null}
+    </button>
+  )
+}
+
 // --- the marketplace view --------------------------------------------------
 
 export function HubView({ listInstalled }) {
@@ -610,7 +593,6 @@ export function HubView({ listInstalled }) {
     setLimit(PAGE_SIZE)
   }, [query, category, sort, onlyInstalled])
 
-  // repo fullName → loader phase of the installed module that matched it
   const phaseOf = useCallback(
     (entry) => {
       if (installed === null) return undefined
@@ -621,8 +603,6 @@ export function HubView({ listInstalled }) {
     [installed],
   )
 
-  // Community bundles installed but absent from the catalog (official
-  // @deepseek-ai/* infra is always present and would be pure noise).
   const untrackedInstalled = useMemo(() => {
     if (installed === null) return []
     const known = new Set()
@@ -679,6 +659,7 @@ export function HubView({ listInstalled }) {
 
   const visible = results.slice(0, limit)
   const hasFilter = query !== '' || category !== 'all' || onlyInstalled
+  const activeCategory = CATEGORIES.find((c) => c.id === category)
 
   const onTopicClick = useCallback((topic) => {
     setQuery((q) => (q.includes(topic) ? q : `${q} ${topic}`.trim()))
@@ -691,9 +672,12 @@ export function HubView({ listInstalled }) {
   }, [])
 
   return (
-    <div style={css.page}>
-      <div style={css.toolbar}>
-        <span style={css.searchWrap}>
+    <div className="hub-root">
+      <style>{STYLE_SHEET}</style>
+
+      {/* 顶栏：搜索 + 排序 + 刷新 */}
+      <div className="hub-toolbar">
+        <span className="hub-search">
           <Input
             style={{ width: '100%' }}
             value={query}
@@ -703,7 +687,7 @@ export function HubView({ listInstalled }) {
             aria-label="搜索 dsh 插件"
           />
         </span>
-        <select style={css.select} value={sort} onChange={(e) => setSort(e.target.value)} aria-label="排序方式">
+        <select className="hub-select" value={sort} onChange={(e) => setSort(e.target.value)} aria-label="排序方式">
           <option value="relevance">相关度</option>
           <option value="stars">星标</option>
           <option value="updated">最近更新</option>
@@ -722,119 +706,153 @@ export function HubView({ listInstalled }) {
         </Button>
       </div>
 
-      <div style={css.chipRowWrap}>
-        <div style={css.chips} role="tablist" aria-label="分类过滤">
-          {CATEGORIES.map((c) => {
-            const count = c.id === 'all' ? data.plugins.length : counts.get(c.id) || 0
-            if (c.id !== 'all' && count === 0) return null
-            return (
-              <Pill key={c.id} active={category === c.id} onClick={() => setCategory(c.id)}>
-                {c.label}
-                <span style={{ opacity: 0.55, marginLeft: '4px' }}>{count}</span>
-              </Pill>
-            )
-          })}
-          {installedCount !== null && installedCount > 0 ? (
-            <>
-              <span style={css.chipDivider} aria-hidden="true" />
-              <Pill active={onlyInstalled} onClick={() => setOnlyInstalled((v) => !v)} title="只看当前 profile 已安装的">
-                已安装
-                <span style={{ opacity: 0.55, marginLeft: '4px' }}>{installedCount}</span>
-              </Pill>
-            </>
-          ) : null}
-        </div>
-      </div>
-
-      <div style={css.scroll}>
-        <div style={css.inner}>
-          <p style={css.resultMeta}>
-            {results.length} 个插件
-            {query ? ` · 关键词「${query}」` : ''}
-            {category !== 'all' ? ` · ${CATEGORIES.find((c) => c.id === category)?.label}` : ''}
-            {onlyInstalled ? ' · 仅已安装' : ''}
-            {results.length > visible.length ? ` · 显示前 ${visible.length}` : ''}
-            {installed === null ? ' · 已装状态未知（插件清单服务不可用）' : ''}
-          </p>
-
-          {visible.length === 0 ? (
-            <CenterState
-              icon={<IconCordisPluginOutline14 size={28} />}
-              title={hasFilter ? '没有匹配的插件' : '目录为空'}
-              hint={
-                hasFilter
-                  ? '换个关键词试试，或清除筛选后浏览全部。'
-                  : '内嵌快照不可用；点击上方刷新按钮重试，或在对话中让 agent 用 plugin_search 搜索。'
-              }
-              action={
-                hasFilter ? (
-                  <Button variant="outline" size="sm" onClick={clearFilters}>
-                    清除筛选
-                  </Button>
-                ) : null
-              }
-            />
-          ) : (
-            <div style={css.list}>
-              {visible.map((entry) => (
-                <PluginCard
-                  key={entry.fullName}
-                  entry={entry}
-                  installedPhase={phaseOf(entry)}
-                  expanded={expandedKey === entry.fullName}
-                  onToggleExpanded={() => setExpandedKey((k) => (k === entry.fullName ? null : entry.fullName))}
-                  onTopicClick={onTopicClick}
+      <div className="hub-scroll">
+        <div className="hub-layout">
+          {/* 左：粘性分类侧边栏（站点同款：色点 + 标签 + mono 计数） */}
+          <aside className="hub-side">
+            <div className="hub-side-card">
+              <div className="hub-side-label">分类</div>
+              <nav className="hub-side-nav" aria-label="插件分类">
+                <CategoryButton
+                  label="全部"
+                  color="#4d6bfe"
+                  count={data.plugins.length}
+                  active={category === 'all' && !onlyInstalled}
+                  onClick={() => {
+                    setCategory('all')
+                    setOnlyInstalled(false)
+                  }}
                 />
-              ))}
+                {CATEGORIES.filter((c) => c.id !== 'all').map((c) => {
+                  const count = counts.get(c.id) || 0
+                  if (count === 0) return null
+                  return (
+                    <CategoryButton
+                      key={c.id}
+                      label={c.label}
+                      color={c.color}
+                      count={count}
+                      active={category === c.id && !onlyInstalled}
+                      onClick={() => {
+                        setCategory(c.id)
+                        setOnlyInstalled(false)
+                      }}
+                    />
+                  )
+                })}
+                {installedCount !== null && installedCount > 0 ? (
+                  <>
+                    <div className="hub-side-sep" />
+                    <button
+                      type="button"
+                      className={`hub-cat${onlyInstalled ? ' active' : ''}`}
+                      onClick={() => setOnlyInstalled((v) => !v)}
+                      aria-pressed={onlyInstalled}
+                      title="只看当前 profile 已安装的"
+                    >
+                      <span className="hub-cat-dot" style={{ background: 'var(--dsw-alias-state-success-primary)' }} />
+                      <span className="hub-cat-name">已安装</span>
+                      <span className="hub-cat-count">{installedCount}</span>
+                    </button>
+                  </>
+                ) : null}
+              </nav>
             </div>
-          )}
+          </aside>
 
-          {results.length > visible.length ? (
-            <div style={css.moreWrap}>
-              <Button variant="outline" size="sm" onClick={() => setLimit((n) => n + PAGE_SIZE)}>
-                加载更多（还有 {results.length - visible.length} 个）
-              </Button>
-            </div>
-          ) : null}
+          {/* 右：结果计数 + 卡片流 */}
+          <div style={{ minWidth: 0 }}>
+            <p className="hub-meta">
+              {activeCategory && category !== 'all' ? (
+                <span>
+                  <span className="hub-cat-dot" style={{ ...css.metaDot, background: activeCategory.color }} />
+                  {activeCategory.label} ·{' '}
+                </span>
+              ) : null}
+              {results.length} 个插件
+              {query ? ` · 「${query}」` : ''}
+              {onlyInstalled ? ' · 仅已安装' : ''}
+              {results.length > visible.length ? ` · 显示前 ${visible.length}` : ''}
+              {installed === null ? ' · 已装状态未知' : ''}
+            </p>
 
-          {untrackedInstalled.length > 0 ? (
-            <>
-              <div style={css.sectionTitle}>
-                已安装 · 不在目录（{untrackedInstalled.length}）
-                <span style={{ fontWeight: 400, fontSize: '11px' }}>当前 profile 中的社区组合包</span>
-              </div>
-              <div style={css.list}>
-                {untrackedInstalled.map(({ moduleName, phase }) => (
-                  <div key={moduleName} style={css.moduleRow}>
-                    <span style={{ ...css.phaseDot, background: PHASE_COLORS[phase] || PHASE_COLORS.pending }} />
-                    <span style={{ fontFamily: 'ui-monospace, Menlo, monospace' }}>{moduleName}</span>
-                    <span style={{ marginLeft: 'auto', fontSize: '11px' }}>{PHASE_LABELS[phase] || '未知状态'}</span>
-                  </div>
+            {visible.length === 0 ? (
+              <CenterState
+                icon={<IconCordisPluginOutline14 size={28} />}
+                title={hasFilter ? '没有匹配的插件' : '目录为空'}
+                hint={
+                  hasFilter
+                    ? '换个关键词试试，或清除筛选后浏览全部。'
+                    : '内嵌快照不可用；点击上方刷新按钮重试，或在对话中让 agent 用 plugin_search 搜索。'
+                }
+                action={
+                  hasFilter ? (
+                    <Button variant="outline" size="sm" onClick={clearFilters}>
+                      清除筛选
+                    </Button>
+                  ) : null
+                }
+              />
+            ) : (
+              <div className="hub-list">
+                {visible.map((entry) => (
+                  <PluginCard
+                    key={entry.fullName}
+                    entry={entry}
+                    installedPhase={phaseOf(entry)}
+                    expanded={expandedKey === entry.fullName}
+                    onToggleExpanded={() => setExpandedKey((k) => (k === entry.fullName ? null : entry.fullName))}
+                    onTopicClick={onTopicClick}
+                  />
                 ))}
               </div>
-            </>
-          ) : null}
+            )}
 
-          <div style={css.footer}>
-            <span>
-              共 {data.plugins.length} 个 · 数据 {String(data.generatedAt).slice(0, 10) || '未知'}
-              {data.origin === 'refreshed' ? ' · 已在线更新' : ' · 内嵌快照'}
-            </span>
-            {refreshFailed ? (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', color: 'var(--dsw-alias-state-warn-primary)' }}>
-                <IconWarningOutline16 size={11} />
-                在线刷新失败，展示本地数据
-              </span>
+            {results.length > visible.length ? (
+              <div className="hub-more">
+                <Button variant="outline" size="sm" onClick={() => setLimit((n) => n + PAGE_SIZE)}>
+                  加载更多（还有 {results.length - visible.length} 个）
+                </Button>
+              </div>
             ) : null}
-            <span>·</span>
-            <a style={{ color: 'inherit' }} href="https://dsh.qomob.ai" target="_blank" rel="noreferrer">
-              DSH 工坊 ↗
-            </a>
+
+            {untrackedInstalled.length > 0 ? (
+              <>
+                <div className="hub-sec">
+                  已安装 · 不在目录（{untrackedInstalled.length}）
+                  <span style={css.secHint}>当前 profile 中的社区组合包</span>
+                </div>
+                <div className="hub-list">
+                  {untrackedInstalled.map(({ moduleName, phase }) => (
+                    <div key={moduleName} style={css.moduleRow}>
+                      <span style={{ ...css.phaseDot, background: PHASE_COLORS[phase] || PHASE_COLORS.pending }} />
+                      <span style={{ fontFamily: 'ui-monospace, Menlo, monospace' }}>{moduleName}</span>
+                      <span style={{ marginLeft: 'auto', fontSize: '11px' }}>{PHASE_LABELS[phase] || '未知状态'}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : null}
+
+            <div className="hub-footer">
+              <span>
+                共 {data.plugins.length} 个 · 数据 {String(data.generatedAt).slice(0, 10) || '未知'}
+                {data.origin === 'refreshed' ? ' · 已在线更新' : ' · 内嵌快照'}
+              </span>
+              {refreshFailed ? (
+                <span style={css.warnInline}>
+                  <IconWarningOutline16 size={11} />
+                  在线刷新失败，展示本地数据
+                </span>
+              ) : null}
+              <span>·</span>
+              <a style={{ color: 'inherit' }} href="https://dsh.qomob.ai" target="_blank" rel="noreferrer">
+                DSH 工坊 ↗
+              </a>
+            </div>
           </div>
         </div>
       </div>
-
-      <style>{`@keyframes dsh-plugin-hub-spin { to { transform: rotate(360deg) } }`}</style>
 
       {toast !== null ? <Toast key={toast.seq} text={toast.text} onDone={() => setToast(null)} /> : null}
     </div>
