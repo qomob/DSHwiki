@@ -338,6 +338,20 @@ npm test && npm run lint && npm run build   # 确保全绿再提交
 
 ---
 
+## 💬 加入社群
+
+扫码加入 DSH 工坊微信社群——交流 dsh 用法、插件开发与最佳实践：
+
+<div align="center">
+
+<img src="wechat.jpg" width="180" alt="DSH 工坊微信群二维码" />
+
+</div>
+
+> 微信群二维码有时效；若扫码失效，请到 [Issues](https://github.com/qomob/dsh/issues) 留言，我们会更新二维码。
+
+---
+
 ## 声明
 
 本站为社区驱动的非官方项目，与 DeepSeek AI 官方无隶属关系。"DeepSeek"、"dsh"、"DeepSeek Harness" 等名称与商标版权归原作者所有。

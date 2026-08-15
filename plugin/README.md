@@ -203,6 +203,18 @@ plugin/
 - **审批门**：`plugin_install` 优先走组合里的 `approval` 服务（`request()` 交互审批，仅 `allowed-once` 放行）；无审批服务时要求显式 `confirm: true`。执行只 spawn 受控命令（无 shell、超时、输出封顶）。
 - **无损 JSON 纪律**：工具返回值不得包含 `undefined`（会整单被判为非法输出）——所有可选字段都是条件写入。
 
+## 💬 加入社群
+
+扫码加入微信社群，交流 dsh 插件用法与开发：
+
+<div align="center">
+
+<img src="https://github.com/qomob/dsh/raw/main/wechat.jpg" width="180" alt="微信群二维码" />
+
+</div>
+
+> 二维码失效？到 [Issues](https://github.com/qomob/dsh/issues) 留言更新。
+
 ## License
 
 MIT

@@ -204,6 +204,18 @@ Implementation notes:
 - **Approval gate**: `plugin_install` prefers the composition's `approval` service (interactive `request()`; only `allowed-once` proceeds); without it, an explicit `confirm: true` is required. Execution spawns only a controlled command (no shell, timeout, capped output).
 - **Lossless-JSON discipline**: tool return values must never contain `undefined` (the whole output would be rejected) — all optional fields are written conditionally.
 
+## 💬 Join the Community
+
+Scan the QR code to join the WeChat group to discuss dsh plugin usage and development:
+
+<div align="center">
+
+<img src="https://github.com/qomob/dsh/raw/main/wechat.jpg" width="180" alt="WeChat group QR code" />
+
+</div>
+
+> QR expired? Leave a note in [Issues](https://github.com/qomob/dsh/issues) for a refresh.
+
 ## License
 
 MIT

@@ -338,6 +338,20 @@ npm test && npm run lint && npm run build   # All green before committing
 
 ---
 
+## 💬 Join the Community
+
+Scan the QR code to join the DSH Workshop WeChat group — chat about dsh usage, plugin development, and best practices:
+
+<div align="center">
+
+<img src="wechat.jpg" width="180" alt="DSH Workshop WeChat group QR code" />
+
+</div>
+
+> WeChat QR codes expire; if it fails to scan, leave a note in [Issues](https://github.com/qomob/dsh/issues) and we'll refresh it.
+
+---
+
 ## Disclaimer
 
 This is a community-driven unofficial project with no affiliation with DeepSeek AI. "DeepSeek", "dsh", "DeepSeek Harness" and related names/trademarks belong to their respective owners.
