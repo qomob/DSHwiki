@@ -290,9 +290,9 @@ location = /index.html {                # 入口不缓存
 │   ├── cordis.patch.yml       # bundle 层（package.json 的 dsh.bundle 指向它）
 │   ├── src/                   # categories / registry / live / refresh / format
 │   ├── data/registry.json     # 内嵌插件快照（CI 每日刷新 + 运行时每日自动拉取）
-│   ├── tests/                 # 27 个单元测试（node:test，无网络）
+│   ├── tests/                 # 44 个单元测试（node:test，无网络）
 │   └── smoke/                 # 端到端冒烟（真实 cordis + dsh-tools 管线）
-├── tests/unit.test.mjs        # 纯函数单测（27 个用例）
+├── tests/unit.test.mjs        # 纯函数单测（36 个用例）
 ├── public/                    # 静态资源
 │   ├── favicon.svg
 │   ├── icons.svg

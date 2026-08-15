@@ -9,6 +9,7 @@ on:
     paths-ignore:
       - 'src/data/repos.json'
       - 'plugin/data/registry.json' # 本工作流自身的快照提交，避免递归触发
+      - 'plugin/client.js'          # 同上：重建产物提交也由本工作流产生
   workflow_dispatch:
     inputs:
       force_deploy:
@@ -102,7 +103,7 @@ jobs:
         run: npm run build
 
       - name: 部署到服务器
-        if: steps.git_diff.outputs.changed == 'true' || github.event.inputs.force_deploy == 'true'
+        # 无条件部署：纯代码提交也必须上线，不能依赖当天聚合恰好产生数据变更
         uses: burnett01/rsync-deployments@796cf0d5e4b535745ce49d7429f77cf39e25ef39
         with:
           switches: -avz --delete --exclude=.user.ini

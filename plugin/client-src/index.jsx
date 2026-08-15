@@ -129,6 +129,12 @@ function formatWhen(iso) {
   return `${Math.floor(d / 365)} 年前`
 }
 
+// Only http(s) URLs may become links — homepage/topic data comes from
+// GitHub repo metadata (owner-controlled), so protocol-whitelist at render.
+function safeHttpUrl(value) {
+  return typeof value === 'string' && /^https?:\/\//i.test(value) ? value : null
+}
+
 function formatSize(kb) {
   if (!Number.isFinite(kb) || kb <= 0) return null
   if (kb < 1024) return `${kb} KB`
@@ -626,8 +632,8 @@ function PluginCard({ entry, installedPhase, installedModuleName, expanded, onTo
                 仓库
                 <IconRightUpOutline14 size={11} />
               </a>
-              {entry.homepage ? (
-                <a style={{ ...css.repoLink, fontSize: '12px' }} href={entry.homepage} target="_blank" rel="noreferrer">
+              {safeHttpUrl(entry.homepage) ? (
+                <a style={{ ...css.repoLink, fontSize: '12px' }} href={safeHttpUrl(entry.homepage)} target="_blank" rel="noreferrer">
                   主页
                   <IconRightUpOutline14 size={11} />
                 </a>

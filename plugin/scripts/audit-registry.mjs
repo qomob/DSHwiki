@@ -50,6 +50,13 @@ async function main() {
     }
   }
 
+  // Only persist when we have a token (full audit) or an explicit force;
+  // a token-less CI run would otherwise commit a half-audited snapshot.
+  const writeAllowed = token !== '' || process.env.AUDIT_WRITE_FORCE === '1'
+  if (!writeAllowed) {
+    console.log('sample mode without GH_TOKEN — NOT writing data/registry.json')
+    return
+  }
   registry.auditedAt = new Date().toISOString()
   writeFileSync(REGISTRY, `${JSON.stringify(registry, null, 1)}\n`)
   const byTier = {}

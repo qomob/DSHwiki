@@ -290,9 +290,9 @@ Push `dist/` to a `gh-pages` branch, or pick GitHub Actions deployment under Set
 │   ├── cordis.patch.yml       # Bundle layer (referenced by dsh.bundle in package.json)
 │   ├── src/                   # categories / registry / live / install / refresh / format
 │   ├── data/registry.json     # Embedded snapshot (CI daily + runtime daily pull)
-│   ├── tests/                 # Unit tests (node:test, no network)
+│   ├── tests/                 # 44 unit tests (node:test, no network)
 │   └── smoke/                 # End-to-end smoke (real cordis + dsh-tools pipeline)
-├── tests/unit.test.mjs        # Pure-function unit tests
+├── tests/unit.test.mjs        # Pure-function unit tests (36 cases)
 ├── public/                    # Static assets
 │   ├── favicon.svg
 │   ├── icons.svg
