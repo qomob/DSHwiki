@@ -1046,11 +1046,12 @@ export function HubView({ listInstalled }) {
 
 export const name = 'dsh-plugin-hub-client'
 
-// Wait for the client slots service and the typed remote (pluginInventory)
-// before applying — mirrors the official ui-trajectory / settings patterns.
-// Without inject the fiber can activate before the services exist and
-// silently register nothing, leaving the tab blank.
-export const inject = ['slots', 'remote']
+// Wait for the client slots service, the typed remote, AND the
+// pluginInventory namespace service before applying — mirrors the official
+// settings-plugin-inventory consumer, which injects 'remote.pluginInventory'
+// (the namespace mounts as its own service after $mount; injecting only
+// 'remote' leaves the namespace unresolved at call time → 已装状态未知).
+export const inject = ['slots', 'remote', 'remote.pluginInventory']
 
 export function apply(ctx) {
   // Installed-bundle reader over the official pluginInventory remote — the
