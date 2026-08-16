@@ -80,6 +80,8 @@ jobs:
           # 若 audit 失败，本步骤整体退出，git_diff 不会看到半成品。
           GH_TOKEN="${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}" node plugin/scripts/audit-registry.mjs
           node plugin/scripts/sync-registry.mjs
+          # 硬校验：publishedAt 覆盖不足 50% 即失败（审计静默不写盘的兜底报警）
+          node -e "const d=require('./plugin/data/registry.json');const n=d.plugins.filter(p=>p.publishedAt).length;console.log('publishedAt coverage:',n,'/',d.plugins.length);if(n<d.plugins.length/2)process.exit(2)" 
           # 重建 Web UI「插件」tab 的内嵌快照副本（client.js 产物随源提交）
           npx pnpm install --dir plugin --store-dir .tmp-pnpm-store
           npm run build-client --prefix plugin
@@ -92,13 +94,14 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          node -e "const d=require('./plugin/data/registry.json');console.log('coverage: tier',d.plugins.filter(p=>p.tier).length,'publishedAt',d.plugins.filter(p=>p.publishedAt).length)"
           if git diff --quiet src/data/repos.json plugin/data/registry.json plugin/client.js; then
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "数据无变化"
           else
             git add src/data/repos.json plugin/data/registry.json plugin/client.js
             git commit -m "chore(data): 每日聚合 dsh 生态 $(date -u +%Y-%m-%d)"
-            git push || echo "push 失败（可能是 token 权限不足，不影响后续构建部署）"
+            git push || { echo "❌ BOT PUSH FAILED"; exit 1; }
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "数据已更新"
           fi
