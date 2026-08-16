@@ -11,7 +11,7 @@ export default function Footer() {
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2.5">
-              <img src="/favicon.svg" alt="DSH" width={32} height={32} className="h-8 w-8 brightness-0 invert" />
+              <img src="/logo.png" alt="DSH" width={32} height={32} className="h-8 w-8 brightness-0 invert" />
               <span className="text-sm font-medium text-fg">{t.brand.name}</span>
             </div>
             <p className="mt-4 max-w-md text-sm leading-relaxed text-fg-muted">

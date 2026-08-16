@@ -72,7 +72,7 @@ export default function Navbar() {
     >
       <nav className="mx-auto flex h-16 max-w-[1140px] items-center justify-between px-5">
         <a href="#top" className="flex items-center gap-2.5">
-          <img src="/favicon.svg" alt="DSH" width={32} height={32} className="h-8 w-8 brightness-0 invert" />
+          <img src="/logo.png" alt="DSH" width={32} height={32} className="h-8 w-8 brightness-0 invert" />
           <span className="flex flex-col leading-none">
             <span className="text-sm font-medium text-fg">{t.brand.name}</span>
             <span className="text-[10px] text-fg-dim">{t.brand.tagline}</span>
