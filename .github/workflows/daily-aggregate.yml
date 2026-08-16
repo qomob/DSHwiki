@@ -69,13 +69,17 @@ jobs:
           echo "⚠️ 聚合脚本失败（可能是 GitHub API 限流），使用现有 repos.json 继续构建部署"
           echo "当前 repos.json 仓库数: $(node -e "console.log(require("./src/data/repos.json").repos.length)")"
 
-      - name: 同步插件内嵌快照（dsh-plugin-hub）
+      - name: 同步插件内嵌快照 + 信任审计（原子：审计失败不提交无字段中间态）
+        id: plugin_data
         continue-on-error: true
         run: |
-          node plugin/scripts/sync-registry.mjs
-          # 供应链信任审计：为每条目录条目计算 Verified/Community/Unverified 分级
-          # （每个插件 2 次 GitHub 请求，需 GH_TOKEN）
+          set -e
+          # 1) 先审计到临时文件（不动仓库内的 registry.json）
+          # 2) sync 生成新快照（粘性保留已有审计字段）
+          # 3) 用审计结果覆盖（tier/version/publishedAt/repoSizeKb 全量）
+          # 若 audit 失败，本步骤整体退出，git_diff 不会看到半成品。
           GH_TOKEN="${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}" node plugin/scripts/audit-registry.mjs
+          node plugin/scripts/sync-registry.mjs
           # 重建 Web UI「插件」tab 的内嵌快照副本（client.js 产物随源提交）
           npx pnpm install --dir plugin --store-dir .tmp-pnpm-store
           npm run build-client --prefix plugin
