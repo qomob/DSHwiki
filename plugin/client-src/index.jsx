@@ -600,7 +600,7 @@ function PluginCard({ entry, installedPhase, installedModuleName, expanded, onTo
             <code style={css.cmdBlock}>{identifier || cmd}</code>
           </DetailRow>
           <DetailRow label="版本">
-            {version ? <span>{version}</span> : <span style={{ opacity: 0.6 }}>—（待审计）</span>}
+            {version ? <span>{version}</span> : <span style={{ opacity: 0.6 }}>—（未声明）</span>}
           </DetailRow>
           <DetailRow label="上次更新">
             {entry.updatedAt ? `${String(entry.updatedAt).slice(0, 10)}（${when || '未知'}）` : '未知'}

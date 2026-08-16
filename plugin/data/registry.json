@@ -2131,7 +2131,17 @@
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "homepage": "https://deepseekdesktop.com",
    "language": "TypeScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-15T03:00:06Z",
+   "repoSizeKb": 26763,
+   "version": "0.1.0-rc.5",
+   "tier": "unverified",
+   "auditAt": "2026-08-16T12:34:17.487Z",
+   "riskSignals": [
+    "no dsh manifest at repo root",
+    "bundle may live in a subpackage (monorepo)",
+    "install-time scripts (prepare/preinstall)"
+   ]
   },
   {
    "fullName": "yangYzc/dsh-plugin-quote-reply",
@@ -2963,7 +2973,13 @@
    "url": "https://github.com/JFWaskin/dsh-git-nexus",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "JavaScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T03:50:14Z",
+   "repoSizeKb": 22,
+   "version": "0.1.1",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.488Z",
+   "riskSignals": []
   },
   {
    "fullName": "icefall7/dsh-plugin-scout",
@@ -12481,7 +12497,15 @@
    "installCmd": "dsh plugin add \"github:pppolf/dsh-webgate\"",
    "url": "https://github.com/pppolf/dsh-webgate",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
-   "language": "JavaScript"
+   "language": "JavaScript",
+   "publishedAt": "2026-08-16T02:09:38Z",
+   "repoSizeKb": 654,
+   "version": "0.2.3",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.490Z",
+   "riskSignals": [
+    "no license declared"
+   ]
   },
   {
    "fullName": "WhitePlusMS/dsh-git-graph",
@@ -13789,7 +13813,13 @@
    "url": "https://github.com/zjl1989-li/dsh-harness-zh-cn",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "JavaScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T06:54:22Z",
+   "repoSizeKb": 198,
+   "version": "0.1.2",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.490Z",
+   "riskSignals": []
   },
   {
    "fullName": "STARDUSTLC666/dsh-remotion",
@@ -14270,7 +14300,15 @@
    "url": "https://github.com/txy-ucas/dsh-workspace-snapshot",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "TypeScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-15T13:11:27Z",
+   "repoSizeKb": 39,
+   "version": "0.1.0",
+   "tier": "unverified",
+   "auditAt": "2026-08-16T12:34:17.492Z",
+   "riskSignals": [
+    "install-time scripts (prepare/preinstall)"
+   ]
   },
   {
    "fullName": "lonelymoon87/dsh-guardian",
@@ -14454,7 +14492,15 @@
    "url": "https://github.com/bigclawd/dsh-security-guard",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "TypeScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T02:22:18Z",
+   "repoSizeKb": 110,
+   "version": "0.1.0-rc.7",
+   "tier": "unverified",
+   "auditAt": "2026-08-16T12:34:17.492Z",
+   "riskSignals": [
+    "install-time scripts (prepare/preinstall)"
+   ]
   },
   {
    "fullName": "tuogusa/dsh-plugin-toggle",
@@ -14963,7 +15009,15 @@
    "url": "https://github.com/chouyong/dsh-fork-graph",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "TypeScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T03:56:54Z",
+   "repoSizeKb": 224,
+   "version": "0.1.0",
+   "tier": "unverified",
+   "auditAt": "2026-08-16T12:34:17.493Z",
+   "riskSignals": [
+    "install-time scripts (prepare/preinstall)"
+   ]
   },
   {
    "fullName": "solstice621/dsh-token-usage-dashboard",
@@ -15560,7 +15614,15 @@
    "url": "https://github.com/ChuanTianML/prompt-for-me",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "JavaScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T06:52:03Z",
+   "repoSizeKb": 32,
+   "version": "0.2.0",
+   "tier": "unverified",
+   "auditAt": "2026-08-16T12:34:17.493Z",
+   "riskSignals": [
+    "install-time scripts (prepare/preinstall)"
+   ]
   },
   {
    "fullName": "fengMax1997/dsh-line-select",
@@ -15854,7 +15916,13 @@
    "url": "https://github.com/dannyvan/dsh-file-drop",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "JavaScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T03:57:38Z",
+   "repoSizeKb": 11,
+   "version": "1.0.0",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.493Z",
+   "riskSignals": []
   },
   {
    "fullName": "RizenHNT/dsh-skin-digital-arcade",
@@ -15981,7 +16049,13 @@
    "url": "https://github.com/ringoage/dsh-subagent-model-picker",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "JavaScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T05:28:32Z",
+   "repoSizeKb": 28,
+   "version": "1.0.0",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.494Z",
+   "riskSignals": []
   },
   {
    "fullName": "BruceLanLan/dsh-tier-router",
@@ -16337,7 +16411,13 @@
    "url": "https://github.com/rogerdigital/dsh-searxng",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "TypeScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T04:39:45Z",
+   "repoSizeKb": 29,
+   "version": "0.1.0",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.494Z",
+   "riskSignals": []
   },
   {
    "fullName": "cerebrixos-org/dsh-asimovbox",
@@ -16895,7 +16975,15 @@
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "descriptionZh": "将DeepSeek Harness（dsh）连接到本地Obsidian库：搜索、读取、写入、移动及删除笔记。",
    "language": "TypeScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T04:16:22Z",
+   "repoSizeKb": 64,
+   "version": "0.1.0",
+   "tier": "unverified",
+   "auditAt": "2026-08-16T12:34:17.494Z",
+   "riskSignals": [
+    "install-time scripts (prepare/preinstall)"
+   ]
   },
   {
    "fullName": "happpsee/dsh-desktop-app",
@@ -16941,7 +17029,13 @@
    "url": "https://github.com/JazzuLu/find-dsh-plugins",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "JavaScript",
-   "license": "BSD-3-Clause"
+   "license": "BSD-3-Clause",
+   "publishedAt": "2026-08-15T14:49:35Z",
+   "repoSizeKb": 44,
+   "version": "0.1.0",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.495Z",
+   "riskSignals": []
   },
   {
    "fullName": "QlzqQlzq/dsh-dual-agent-presets",
@@ -17241,7 +17335,13 @@
    "url": "https://github.com/michaelcode-wang/dsh-wecom",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "JavaScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T06:46:19Z",
+   "repoSizeKb": 10,
+   "version": "0.1.0",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.495Z",
+   "riskSignals": []
   },
   {
    "fullName": "bainianlaoyao/windows-bash",
@@ -17261,7 +17361,13 @@
    "url": "https://github.com/bainianlaoyao/windows-bash",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "JavaScript",
-   "license": "NOASSERTION"
+   "license": "NOASSERTION",
+   "publishedAt": "2026-08-16T03:05:10Z",
+   "repoSizeKb": 20,
+   "version": "0.1.0",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.495Z",
+   "riskSignals": []
   },
   {
    "fullName": "guo6x/dsh-housekeeper",
@@ -17389,7 +17495,15 @@
    "url": "https://github.com/tancheng33/dsh-code-runtime-container",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "TypeScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T04:54:10Z",
+   "repoSizeKb": 44,
+   "version": "0.1.0",
+   "tier": "unverified",
+   "auditAt": "2026-08-16T12:34:17.497Z",
+   "riskSignals": [
+    "install-time scripts (prepare/preinstall)"
+   ]
   },
   {
    "fullName": "tancheng33/dsh-credentials-vault",
@@ -17413,7 +17527,15 @@
    "url": "https://github.com/tancheng33/dsh-credentials-vault",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "TypeScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T04:54:04Z",
+   "repoSizeKb": 37,
+   "version": "0.1.0",
+   "tier": "unverified",
+   "auditAt": "2026-08-16T12:34:17.498Z",
+   "riskSignals": [
+    "install-time scripts (prepare/preinstall)"
+   ]
   },
   {
    "fullName": "tancheng33/dsh-spill-s3",
@@ -17437,7 +17559,15 @@
    "url": "https://github.com/tancheng33/dsh-spill-s3",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "TypeScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T04:53:57Z",
+   "repoSizeKb": 40,
+   "version": "0.1.0",
+   "tier": "unverified",
+   "auditAt": "2026-08-16T12:34:17.498Z",
+   "riskSignals": [
+    "install-time scripts (prepare/preinstall)"
+   ]
   },
   {
    "fullName": "huiliyi37/dsh-tianshu-tui",
@@ -20448,7 +20578,15 @@
    "installCmd": "dsh plugin add \"github:genius-alray/dsh-model-picker\"",
    "url": "https://github.com/genius-alray/dsh-model-picker",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
-   "language": "JavaScript"
+   "language": "JavaScript",
+   "publishedAt": "2026-08-16T00:55:05Z",
+   "repoSizeKb": 57,
+   "version": "0.1.0",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.498Z",
+   "riskSignals": [
+    "no license declared"
+   ]
   },
   {
    "fullName": "hellosz/dsh-pets",
@@ -21129,7 +21267,13 @@
    "url": "https://github.com/Andyqwe44/dsh-notify-win",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "PowerShell",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-15T07:00:32Z",
+   "repoSizeKb": 192,
+   "version": "0.2.0",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.498Z",
+   "riskSignals": []
   },
   {
    "fullName": "AbnerAI/dsh-monitor",
@@ -21240,7 +21384,15 @@
    "url": "https://github.com/yyb16yyb-hub/dsh-deepseek-usage",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "TypeScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T04:58:24Z",
+   "repoSizeKb": 112,
+   "version": "0.1.0",
+   "tier": "unverified",
+   "auditAt": "2026-08-16T12:34:17.499Z",
+   "riskSignals": [
+    "install-time scripts (prepare/preinstall)"
+   ]
   },
   {
    "fullName": "openAGFS/dsh-agfs",
@@ -21372,7 +21524,13 @@
    "url": "https://github.com/pc439527/dsh-side-monitor",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "JavaScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-15T09:48:44Z",
+   "repoSizeKb": 82,
+   "version": "0.2.2",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.499Z",
+   "riskSignals": []
   },
   {
    "fullName": "izz-BLUE/dsh-deepseek-usage-dashboard",
@@ -21512,7 +21670,13 @@
    "url": "https://github.com/warmwine/dsh-ui-font",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "JavaScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-15T04:08:38Z",
+   "repoSizeKb": 352,
+   "version": "0.9.1",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.499Z",
+   "riskSignals": []
   },
   {
    "fullName": "MangMax/dsh-themes",
@@ -21575,7 +21739,13 @@
    "url": "https://github.com/Lhy723/dsh-neu-theme",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "JavaScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T03:36:51Z",
+   "repoSizeKb": 966,
+   "version": "0.1.0",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.500Z",
+   "riskSignals": []
   },
   {
    "fullName": "GodD6366/dsh-sub2api",
@@ -21616,7 +21786,13 @@
    "url": "https://github.com/dawnliming/dsh-chinese-mode",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "JavaScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T04:17:36Z",
+   "repoSizeKb": 14,
+   "version": "0.1.0",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.500Z",
+   "riskSignals": []
   },
   {
    "fullName": "zljr/dsh-share",
@@ -21806,7 +21982,13 @@
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "homepage": "https://www.npmjs.com/package/dsh-vision-web",
    "language": "TypeScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T06:06:41Z",
+   "repoSizeKb": 158,
+   "version": "0.1.0",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.500Z",
+   "riskSignals": []
   },
   {
    "fullName": "Dariandai/dsh-starter-pack",
@@ -22559,7 +22741,15 @@
    "url": "https://github.com/xiaoyanzi191/dsh-premium-themes",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "language": "TypeScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-15T08:58:48Z",
+   "repoSizeKb": 501,
+   "version": "0.1.0",
+   "tier": "unverified",
+   "auditAt": "2026-08-16T12:34:17.501Z",
+   "riskSignals": [
+    "install-time scripts (prepare/preinstall)"
+   ]
   },
   {
    "fullName": "Semidia/dsh-smart-route",
@@ -22724,7 +22914,13 @@
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "homepage": "https://github.com/a735624258/dsh-skill-picker",
    "language": "JavaScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T04:26:07Z",
+   "repoSizeKb": 36,
+   "version": "0.1.0",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.501Z",
+   "riskSignals": []
   },
   {
    "fullName": "Limitinfinitude/DSH-Right-Sidebar",
@@ -23606,7 +23802,13 @@
    "installCmd": "dsh plugin add \"github:somnusovis/dsh-multi-workspace\"",
    "url": "https://github.com/somnusovis/dsh-multi-workspace",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-15T14:24:17Z",
+   "repoSizeKb": 7,
+   "version": "0.1.0",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.501Z",
+   "riskSignals": []
   },
   {
    "fullName": "xsoc1/math-research-dsh",
@@ -23695,7 +23897,13 @@
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
    "descriptionZh": "DeepSeek Harness 的桌面端与 Webhook 通知功能。",
    "language": "TypeScript",
-   "license": "MIT"
+   "license": "MIT",
+   "publishedAt": "2026-08-16T00:15:36Z",
+   "repoSizeKb": 154,
+   "version": "0.2.1",
+   "tier": "verified",
+   "auditAt": "2026-08-16T12:34:17.501Z",
+   "riskSignals": []
   },
   {
    "fullName": "xmanrui/dsh-weixin",
@@ -24547,7 +24755,16 @@
    "installCmd": "dsh plugin add \"github:xiaoyanzi191/dsh-desktop\"",
    "url": "https://github.com/xiaoyanzi191/dsh-desktop",
    "firstSeenAt": "2026-08-16T08:23:19.486Z",
-   "language": "JavaScript"
+   "language": "JavaScript",
+   "publishedAt": "2026-08-14T01:06:58Z",
+   "repoSizeKb": 38,
+   "version": "1.0.0",
+   "tier": "unverified",
+   "auditAt": "2026-08-16T12:34:17.502Z",
+   "riskSignals": [
+    "no license declared",
+    "no dsh manifest at repo root"
+   ]
   }
  ]
 }
