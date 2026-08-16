@@ -75,3 +75,23 @@ test('isInstallAllowed enforces verified-only policy', () => {
   assert.equal(isInstallAllowed('unverified', 'ask'), true)
   assert.equal(TIERS.length, 3)
 })
+
+test('normalized repo shape also feeds computeTier (archived/pushedAt)', () => {
+  // live.js normalize() output uses camelCase — computeTier must accept it.
+  const r = computeTier({
+    entry: { license: 'MIT' },
+    manifest,
+    repo: { archived: true, pushedAt: '2024-01-01T00:00:00Z' },
+    now: NOW,
+  })
+  assert.equal(r.tier, 'unverified')
+  assert.ok(r.signals.includes('repo archived'))
+})
+
+test('archived detection works with normalized shape (was silently broken)', () => {
+  // Before the fix, normalize() dropped `archived`, so archived repos were
+  // never downgraded — this test pins the regression.
+  const r = computeTier({ entry: { license: 'MIT' }, manifest, repo: { archived: true, pushedAt: '2026-08-01T00:00:00Z' }, now: NOW })
+  assert.equal(r.tier, 'unverified')
+  assert.ok(r.signals.includes('repo archived'))
+})

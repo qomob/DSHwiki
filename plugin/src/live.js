@@ -78,6 +78,8 @@ export function createGithubClient(config) {
   }
 
   // Normalize a GitHub repo API item into a registry-shaped entry.
+  // Trust-audit fields (archived/pushedAt/publishedAt/repoSizeKb) must be
+  // preserved here — computeTier and the nightly audit read them.
   function normalize(item) {
     return {
       fullName: item.full_name,
@@ -91,6 +93,10 @@ export function createGithubClient(config) {
       license: item.license?.spdx_id || undefined,
       topics: item.topics || [],
       updatedAt: item.updated_at,
+      pushedAt: item.pushed_at || undefined,
+      archived: Boolean(item.archived),
+      publishedAt: item.created_at || undefined,
+      repoSizeKb: typeof item.size === 'number' && item.size > 0 ? item.size : undefined,
       homepage: item.homepage || undefined,
       url: item.html_url,
       official: item.owner?.login === 'deepseek-ai',

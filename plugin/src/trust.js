@@ -44,8 +44,11 @@ export function computeTier({ entry, manifest, repo, now = Date.now() }) {
     (k) => typeof scripts[k] === 'string' && scripts[k].trim() !== '',
   )
   const hasWorkspaces = Array.isArray(manifest?.workspaces) && manifest.workspaces.length > 0
+  // Accept both raw GitHub shapes (archived/pushed_at) and our normalized
+  // client shapes (archived/pushedAt) — computeTier is called with both.
   const archived = Boolean(repo?.archived)
-  const pushedDays = daysBetween(repo?.pushed_at || entry?.updatedAt, now)
+  const pushedAt = repo?.pushed_at || repo?.pushedAt
+  const pushedDays = daysBetween(pushedAt || entry?.updatedAt, now)
 
   if (!entry?.license) signals.push('no license declared')
   if (manifest !== undefined && !hasBundle && !hasClient) signals.push('no dsh manifest at repo root')

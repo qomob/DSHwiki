@@ -34,10 +34,13 @@ async function main() {
       entry.tier = result.tier
       entry.auditAt = result.auditAt
       entry.riskSignals = result.signals
-      // VS Code-style detail data from the same pass (best effort).
+      // VS Code-style detail data from the same pass (best effort); accept
+      // both raw and normalized repo shapes.
       if (manifest?.version) entry.version = String(manifest.version).slice(0, 40)
-      if (repo?.created_at) entry.publishedAt = repo.created_at
-      if (typeof repo?.size === 'number' && repo.size > 0) entry.repoSizeKb = repo.size
+      const published = repo?.created_at || repo?.publishedAt
+      const sizeKb = typeof repo?.size === 'number' ? repo.size : repo?.repoSizeKb
+      if (published) entry.publishedAt = published
+      if (typeof sizeKb === 'number' && sizeKb > 0) entry.repoSizeKb = sizeKb
       audited += 1
     } catch (e) {
       // Keep previous tier on transient failures; decisive facts only downgrade.
