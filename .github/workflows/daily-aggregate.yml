@@ -100,8 +100,15 @@ jobs:
             echo "数据无变化"
           else
             git add src/data/repos.json plugin/data/registry.json plugin/client.js
-            git commit -m "chore(data): 每日聚合 dsh 生态 $(date -u +%Y-%m-%d)"
-            git push || { echo "❌ BOT PUSH FAILED"; exit 1; }
+            git commit -m "chore(data): 每日聚合 dsh 生态 $(date -u +%Y-%m-%d)" || true
+            # 推送前先 rebase（用户/其他运行可能已推进 main），重试 3 次；
+            # 全部失败才响亮报错——不再让 non-fast-forward 静默吞掉审计数据。
+            for attempt in 1 2 3; do
+              git pull --rebase origin main && git push && break
+              echo "push 尝试 $attempt 失败，5s 后重试…"
+              sleep 5
+            done
+            git push origin main || { echo "❌ BOT PUSH FAILED（分支保护或网络）"; exit 1; }
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "数据已更新"
           fi
