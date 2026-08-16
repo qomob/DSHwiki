@@ -93,10 +93,10 @@ export default function HubSection() {
         </div>
 
         {/* ===== 双栏布局：左侧分类侧边栏 + 右侧内容 ===== */}
-        <div className="mt-10 grid gap-8 lg:grid-cols-[220px_1fr]">
+        <div className="mt-10 grid gap-8 md:grid-cols-[220px_1fr]">
 
           {/* 左侧：粘性分类侧边栏 */}
-          <aside className="lg:sticky lg:top-20 lg:self-start">
+          <aside className="md:sticky md:top-20 md:self-start md:max-h-[calc(100vh-110px)] md:overflow-y-auto">
             <div className="rounded-[14px] border border-border-subtle bg-surface-2 p-4">
               <div className="mb-3 px-1 text-[11px] font-medium uppercase tracking-wider text-fg-dim">
                 {t.categories || '分类'}

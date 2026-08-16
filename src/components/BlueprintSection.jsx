@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect } from 'react'
 import { useLang } from '../i18n/LanguageContext.jsx'
 import { UI } from '../i18n/ui.js'
 import { BLUEPRINT_PARTS } from '../data/blueprint'
-import ApiPromoCard from './ApiPromoCard'
 
 // 顶部阅读进度条：随滚动填充,给出"读到哪了"的反馈
 function ScrollProgress({ targetId }) {
@@ -155,8 +154,6 @@ function PartBlock({ part, t, defaultOpen }) {
           </div>
       )}
 
-      {/* API 分销推荐位——PART 01 展开时显示在章节末尾（新手配 Key 的环节） */}
-      {open && part.id === 'part-1' && <ApiPromoCard />}
     </div>
   )
 }
