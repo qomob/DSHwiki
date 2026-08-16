@@ -34,3 +34,8 @@ dsh-dist.zip
 
 # pnpm 临时存储（不应入库）
 .pnpm-store/
+
+# 预览截图生成产物（可重新生成，不入库）
+docs/screenshots/preview.js
+docs/screenshots/preview.html
+docs/screenshots/fonts/

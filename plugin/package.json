@@ -23,7 +23,8 @@
     "test": "node --test tests/*.test.mjs",
     "sync-registry": "node scripts/sync-registry.mjs",
     "build-client": "node scripts/build-client.mjs",
-    "smoke": "cd smoke && node ../node_modules/@deepseek-ai/cordis/bin.js"
+    "smoke": "cd smoke && node ../node_modules/@deepseek-ai/cordis/bin.js",
+    "build-preview": "node scripts/build-preview.mjs"
   },
   "dependencies": {
     "@deepseek-ai/dsh-tools": "^0.1.0-rc.6",
@@ -37,6 +38,7 @@
     "@deepseek-ai/dsh-llm": "^0.1.0-rc.6",
     "@deepseek-ai/dsh-system-prompt": "^0.1.0-rc.6",
     "esbuild": "^0.27.7",
+    "puppeteer-core": "^25.7.0",
     "react": "18.3.1",
     "react-dom": "^18.3.1"
   },

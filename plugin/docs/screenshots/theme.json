@@ -1,0 +1,19 @@
+{
+  "url": "http://127.0.0.1:3080",
+  "light": {
+    "bg-base": "rgb(255, 255, 255)",
+    "bg-layer-1": "rgb(255, 255, 255)",
+    "bg-layer-2": "rgb(255, 255, 255)",
+    "bg-overlay": "rgb(233, 236, 242)",
+    "border-l1": "rgba(0, 0, 0, .04)",
+    "border-l2": "rgba(0, 0, 0, .1)",
+    "label-primary": "rgb(15, 17, 21)",
+    "label-secondary": "rgb(97, 102, 107)",
+    "label-tertiary": "rgb(129, 133, 140)",
+    "brand-primary": "rgb(15, 17, 21)",
+    "state-success-primary": "rgb(34, 197, 94)",
+    "state-error-primary": "rgb(236, 19, 19)",
+    "state-warn-primary": "rgb(245, 158, 11)"
+  },
+  "dark": null
+}

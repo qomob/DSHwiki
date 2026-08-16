@@ -59,6 +59,14 @@ dsh --profile myhub
 - **`plugin_install`** — Agent-driven install: verify the target → interactive approval in the Web UI (explicit `confirm` when no approval service) → run `dsh plugin add`; pnpm authorization failures get an allowBuilds fix hint
 - **"Plugins" tab** — Session view ring (Chat / Trajectory / Plugins): browse, search, filter by category, copy install commands; works offline, auto-refreshes online, follows the theme
 
+### 📸 UI Preview
+
+The "Plugins" tab (session view ring: Chat / Trajectory / **Plugins**):
+
+| Catalog (light) | VS Code-style detail (light) | Catalog (dark) |
+|---|---|---|
+| ![Catalog](docs/screenshots/tab-light-collapsed.png) | ![Detail panel](docs/screenshots/tab-light-detail.png) | ![Dark theme](docs/screenshots/tab-dark-collapsed.png) |
+
 Data refreshes daily: CI collects new plugins at 08:00 (Beijing) and refreshes `plugin/data/registry.json` and `plugin/client.js`; installed plugins pull the latest snapshot every 24 hours in the background (failures silently keep the current snapshot) — no reinstall needed. Configuration (GitHub token, mirrors, limits, timeouts, refresh/install switches) and development notes are in [`plugin/README.en.md`](plugin/README.en.md).
 
 ---

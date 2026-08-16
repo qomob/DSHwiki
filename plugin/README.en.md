@@ -16,6 +16,14 @@ Discover, evaluate, and **install** community plugins right inside dsh (DeepSeek
   - **VS Code-style detail panel**: identifier (install spec) / version / last updated / published / size (repo size) / license / extension resources (repo·homepage·license) / auto-update note; one-click copy of the uninstall command when installed; trust signals listed individually
   - Offline embedded snapshot + on-open online refresh (jsDelivr → raw mirrors) + manual refresh
 
+### 📸 UI Preview
+
+Real rendering of the "Plugins" tab (registered via `conversation.view`, light & dark themes):
+
+| Catalog (light) | VS Code-style detail (light) | Catalog (dark) |
+|---|---|---|
+| ![Catalog](https://github.com/qomob/dsh/raw/main/docs/screenshots/tab-light-collapsed.png) | ![Detail panel](https://github.com/qomob/dsh/raw/main/docs/screenshots/tab-light-detail.png) | ![Dark theme](https://github.com/qomob/dsh/raw/main/docs/screenshots/tab-dark-collapsed.png) |
+
 Data comes from three layers:
 
 1. **Embedded registry snapshot** (default, works offline) — generated daily by the [DSH Workshop](https://dsh.qomob.ai) aggregation pipeline (GitHub topic whitelist + awesome curation + relevance filtering + 16-category auto-classification + Chinese descriptions), shipped with the package (one copy each for the host tools and the Web UI tab); no network or token needed.

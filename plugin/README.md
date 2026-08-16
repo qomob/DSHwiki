@@ -16,6 +16,14 @@
   - **VS Code 风格详情面板**：标识符（安装规格）/ 版本 / 上次更新 / 发布 / 大小（仓库体积）/ 许可证 / 扩展资源（仓库·主页·许可证）/ 自动更新说明；已安装时一键复制卸载命令；信任核验信号逐条展示
   - 离线内嵌快照 + 打开时在线刷新（jsDelivr → raw 双镜像）+ 手动刷新
 
+### 📸 界面预览
+
+「插件」tab 真实渲染（`conversation.view` 注册，明暗双主题）：
+
+| 目录浏览（浅色） | VS Code 风格详情（浅色） | 目录浏览（深色） |
+|---|---|---|
+| ![目录浏览](https://github.com/qomob/dsh/raw/main/docs/screenshots/tab-light-collapsed.png) | ![详情面板](https://github.com/qomob/dsh/raw/main/docs/screenshots/tab-light-detail.png) | ![深色主题](https://github.com/qomob/dsh/raw/main/docs/screenshots/tab-dark-collapsed.png) |
+
 数据来自三层：
 
 1. **内嵌注册表快照**（默认，离线可用）—— 由 [DSH 工坊](https://dsh.qomob.ai) 的聚合管线每日生成（GitHub topic 白名单 + awesome 精选 + 相关性过滤 + 16 类自动分类 + 中文简介），随包分发（宿主工具与 Web UI「插件」tab 各内嵌一份），无需任何网络与 Token。
