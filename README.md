@@ -65,7 +65,7 @@ dsh --profile myhub
 
 | 目录浏览（浅色） | VS Code 风格详情（浅色） | 目录浏览（深色） |
 |---|---|---|
-| ![目录浏览](docs/screenshots/tab-light-collapsed.png) | ![详情面板](docs/screenshots/tab-light-detail.png) | ![深色主题](docs/screenshots/tab-dark-collapsed.png) |
+| ![目录浏览](plugin/docs/screenshots/tab-light-collapsed.png) | ![详情面板](plugin/docs/screenshots/tab-light-detail.png) | ![深色主题](plugin/docs/screenshots/tab-dark-collapsed.png) |
 
 数据每日自动更新：CI 每天 08:00（北京时间）采集新插件并刷新 `plugin/data/registry.json` 与 `plugin/client.js`；已安装的插件每 24 小时后台拉取最新快照（失败静默保留现快照），无需重装。配置项（GitHub Token、镜像、条数、超时、刷新/安装开关等）与开发说明见 [`plugin/README.md`](plugin/README.md)。
 

@@ -22,7 +22,7 @@
 
 | 目录浏览（浅色） | VS Code 风格详情（浅色） | 目录浏览（深色） |
 |---|---|---|
-| ![目录浏览](https://github.com/qomob/dsh/raw/main/docs/screenshots/tab-light-collapsed.png) | ![详情面板](https://github.com/qomob/dsh/raw/main/docs/screenshots/tab-light-detail.png) | ![深色主题](https://github.com/qomob/dsh/raw/main/docs/screenshots/tab-dark-collapsed.png) |
+| ![目录浏览](https://github.com/qomob/dsh/raw/main/plugin/docs/screenshots/tab-light-collapsed.png) | ![详情面板](https://github.com/qomob/dsh/raw/main/plugin/docs/screenshots/tab-light-detail.png) | ![深色主题](https://github.com/qomob/dsh/raw/main/plugin/docs/screenshots/tab-dark-collapsed.png) |
 
 数据来自三层：
 

@@ -65,7 +65,7 @@ The "Plugins" tab (session view ring: Chat / Trajectory / **Plugins**):
 
 | Catalog (light) | VS Code-style detail (light) | Catalog (dark) |
 |---|---|---|
-| ![Catalog](docs/screenshots/tab-light-collapsed.png) | ![Detail panel](docs/screenshots/tab-light-detail.png) | ![Dark theme](docs/screenshots/tab-dark-collapsed.png) |
+| ![Catalog](plugin/docs/screenshots/tab-light-collapsed.png) | ![Detail panel](plugin/docs/screenshots/tab-light-detail.png) | ![Dark theme](plugin/docs/screenshots/tab-dark-collapsed.png) |
 
 Data refreshes daily: CI collects new plugins at 08:00 (Beijing) and refreshes `plugin/data/registry.json` and `plugin/client.js`; installed plugins pull the latest snapshot every 24 hours in the background (failures silently keep the current snapshot) — no reinstall needed. Configuration (GitHub token, mirrors, limits, timeouts, refresh/install switches) and development notes are in [`plugin/README.en.md`](plugin/README.en.md).
 

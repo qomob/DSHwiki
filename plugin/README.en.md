@@ -22,7 +22,7 @@ Real rendering of the "Plugins" tab (registered via `conversation.view`, light &
 
 | Catalog (light) | VS Code-style detail (light) | Catalog (dark) |
 |---|---|---|
-| ![Catalog](https://github.com/qomob/dsh/raw/main/docs/screenshots/tab-light-collapsed.png) | ![Detail panel](https://github.com/qomob/dsh/raw/main/docs/screenshots/tab-light-detail.png) | ![Dark theme](https://github.com/qomob/dsh/raw/main/docs/screenshots/tab-dark-collapsed.png) |
+| ![Catalog](https://github.com/qomob/dsh/raw/main/plugin/docs/screenshots/tab-light-collapsed.png) | ![Detail panel](https://github.com/qomob/dsh/raw/main/plugin/docs/screenshots/tab-light-detail.png) | ![Dark theme](https://github.com/qomob/dsh/raw/main/plugin/docs/screenshots/tab-dark-collapsed.png) |
 
 Data comes from three layers:
 
