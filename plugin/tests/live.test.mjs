@@ -103,3 +103,39 @@ test('network failures surface as GitHubApiError, not raw fetch crashes', async 
   const client = createGithubClient({ liveTimeoutMs: 5000 })
   await assert.rejects(client.getRepo('a/b'), (e) => e instanceof GitHubApiError && /ECONNREFUSED/.test(e.message))
 })
+
+test('normalize preserves audit fields (created_at/size/archived/pushed_at)', async () => {
+  // The regression: live.js normalize() used to drop these four fields, so
+  // the nightly audit could never write publishedAt/repoSizeKb and archived
+  // detection silently failed. Pin the fixed shape.
+  globalThis.fetch = async () =>
+    jsonResponse({
+      full_name: 'a/b',
+      owner: { login: 'a' },
+      description: 'A dsh plugin',
+      stargazers_count: 5,
+      forks_count: 0,
+      updated_at: '2026-08-10T00:00:00Z',
+      pushed_at: '2026-08-09T00:00:00Z',
+      created_at: '2024-03-01T00:00:00Z',
+      size: 4096,
+      archived: true,
+    })
+  const client = createGithubClient({ liveTimeoutMs: 5000 })
+  const entry = await client.getRepo('a/b')
+  assert.equal(entry.archived, true)
+  assert.equal(entry.pushedAt, '2026-08-09T00:00:00Z')
+  assert.equal(entry.publishedAt, '2024-03-01T00:00:00Z')
+  assert.equal(entry.repoSizeKb, 4096)
+
+  // And computeTier over the normalized shape downgrades archived repos.
+  const { computeTier } = await import('../src/trust.js')
+  const tier = computeTier({
+    entry: { license: 'MIT' },
+    manifest: { dsh: { bundle: {} } },
+    repo: entry,
+    now: Date.parse('2026-08-16T00:00:00Z'),
+  })
+  assert.equal(tier.tier, 'unverified')
+  assert.ok(tier.signals.includes('repo archived'))
+})
