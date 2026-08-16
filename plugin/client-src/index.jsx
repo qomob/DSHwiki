@@ -766,7 +766,10 @@ export function HubView({ listInstalled }) {
     }
     const out = []
     for (const [moduleName, phase] of installed) {
+      // Framework internals are not community bundles: @deepseek-ai/* packages
+      // and cordis loader namespaces (cordis:include loads cordis.yml, etc.).
       if (moduleName.startsWith('@deepseek-ai/')) continue
+      if (moduleName.startsWith('cordis:')) continue
       if (moduleName.startsWith('.') || moduleName.startsWith('/')) continue
       if (known.has(moduleName)) continue
       out.push({ moduleName, phase })
