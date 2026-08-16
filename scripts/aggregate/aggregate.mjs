@@ -1,6 +1,6 @@
 // DSH 工坊 每日聚合主流程
 // 1. GitHub Search API(topic 限定) 2. 去重 3. 相关度评分 4. 分类 5. 翻译 6. 输出 repos.json
-import { writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { searchRepos, getRepoNoRetry, RateLimitError } from './github.mjs'
 import { fetchAwesomeRepos } from './awesome.mjs'
 import { translateDescriptions } from './translate.mjs'
@@ -226,6 +226,21 @@ async function main() {
       lastRun: new Date().toISOString(),
     },
     repos,
+  }
+
+  // 骤减保护：搜索配额耗尽等异常会让本次产出远少于上次，直接覆盖会
+  // 摧毁目录。新条数不足上次一半时拒绝写入（保留上一次的好数据）。
+  try {
+    const previous = JSON.parse(readFileSync(OUTPUT_PATH, 'utf8'))
+    const prevCount = Array.isArray(previous.repos) ? previous.repos.length : 0
+    if (prevCount > 0 && repos.length < prevCount / 2) {
+      throw new Error(
+        `本次聚合仅 ${repos.length} 条，不足上次 ${prevCount} 的一半——疑似配额耗尽,拒绝覆盖`,
+      )
+    }
+  } catch (e) {
+    if (/疑似配额耗尽/.test(e.message)) throw e
+    // 读取失败（首次运行/文件损坏）不阻塞
   }
 
   // 写入前校验：保护上一次的好数据不被脏数据覆盖
