@@ -82,9 +82,23 @@ describe('relativeDate', () => {
     const future = new Date(Date.now() + 3600000).toISOString()
     assert.equal(relativeDate(future), '今天更新')
   })
-  it('1 天前返回昨天更新', () => {
-    const past = new Date(Date.now() - 1.5 * 86400000).toISOString()
-    assert.equal(relativeDate(past), '昨天更新')
+  it('昨天中午返回昨天更新（与当前钟点无关）', () => {
+    const past = new Date()
+    past.setDate(past.getDate() - 1)
+    past.setHours(12, 0, 0, 0)
+    assert.equal(relativeDate(past.toISOString()), '昨天更新')
+  })
+  it('昨天深夜仍是昨天更新，不会因跨 24h 变前天', () => {
+    const past = new Date()
+    past.setDate(past.getDate() - 1)
+    past.setHours(23, 0, 0, 0)
+    assert.equal(relativeDate(past.toISOString()), '昨天更新')
+  })
+  it('前天任何时刻都是 2 天前', () => {
+    const past = new Date()
+    past.setDate(past.getDate() - 2)
+    past.setHours(0, 30, 0, 0)
+    assert.equal(relativeDate(past.toISOString()), '2 天前')
   })
 })
 

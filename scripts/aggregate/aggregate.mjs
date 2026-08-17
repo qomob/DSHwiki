@@ -56,6 +56,10 @@ function normalize(item, source) {
     license: item.license?.spdx_id || null,
     topics: item.topics || [],
     updatedAt: item.updated_at,
+    // 事实性字段随搜索结果直接携带（created_at/size 本就在响应里），
+    // 不必等夜间审计——新收录条目从第一天起就有“发布/大小”。
+    publishedAt: item.created_at || null,
+    repoSizeKb: typeof item.size === 'number' && item.size > 0 ? item.size : null,
     homepage: item.homepage || null,
     category: '',
     installCmd: '',

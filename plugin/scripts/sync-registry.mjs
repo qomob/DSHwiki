@@ -55,14 +55,19 @@ function project(r, generatedAt) {
   if (firstSeenAt !== undefined) entry.firstSeenAt = firstSeenAt
   // Sticky audit fields: the nightly audit enriches these; a sync must not
   // wipe them just because one night's audit run was skipped or failed.
-  // (tier, auditAt, riskSignals, version, publishedAt, repoSizeKb)
+  // (tier, auditAt, riskSignals, version)
+  // publishedAt/repoSizeKb are FACTS carried by the aggregation itself
+  // (GitHub search returns created_at/size) — prefer the fresh daily value,
+  // fall back to the previous snapshot so new pipelines stay backfilled.
   const prevAudit = previous?.get(r.fullName)
   if (prevAudit?.tier) entry.tier = prevAudit.tier
   if (prevAudit?.auditAt) entry.auditAt = prevAudit.auditAt
   if (Array.isArray(prevAudit?.riskSignals)) entry.riskSignals = prevAudit.riskSignals
   if (prevAudit?.version) entry.version = prevAudit.version
-  if (prevAudit?.publishedAt) entry.publishedAt = prevAudit.publishedAt
-  if (prevAudit?.repoSizeKb) entry.repoSizeKb = prevAudit.repoSizeKb
+  const publishedAt = r.publishedAt || prevAudit?.publishedAt
+  if (publishedAt) entry.publishedAt = publishedAt
+  const repoSizeKb = r.repoSizeKb || prevAudit?.repoSizeKb
+  if (repoSizeKb) entry.repoSizeKb = repoSizeKb
   if (r.translated && r.description && r.description !== r.descriptionOriginal) {
     entry.descriptionZh = r.description
   }

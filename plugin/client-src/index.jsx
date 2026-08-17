@@ -112,6 +112,23 @@ function daysSince(iso) {
   return Number.isFinite(t) ? (Date.now() - t) / 86400000 : Infinity
 }
 
+// 日历日差（本地时区）：“昨天”当且仅当时间戳的日历日期真的是昨天，
+// 与当前时刻是几点无关。修复 UTC 日期串 + 流失小时数标签错位的问题。
+function calendarDaysSince(iso) {
+  const d = new Date(iso)
+  if (!iso || Number.isNaN(d.getTime())) return Infinity
+  const startOfDay = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime()
+  return Math.round((startOfDay(new Date()) - startOfDay(d)) / 86400000)
+}
+
+// 本地时区日期串：与上面的日历标签同源，日期与括号里的“昨天/N 天前”永不矛盾。
+function localDateStr(iso) {
+  const d = new Date(iso)
+  if (!iso || Number.isNaN(d.getTime())) return ''
+  const p = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+}
+
 function formatStars(n) {
   if (!Number.isFinite(n)) return '0'
   if (n >= 10000) return `${(n / 1000).toFixed(0)}k`
@@ -120,11 +137,11 @@ function formatStars(n) {
 }
 
 function formatWhen(iso) {
-  const d = daysSince(iso)
+  const d = calendarDaysSince(iso)
   if (d === Infinity) return ''
-  if (d < 1) return '今天'
-  if (d < 2) return '昨天'
-  if (d < 30) return `${Math.floor(d)} 天前`
+  if (d <= 0) return '今天'
+  if (d === 1) return '昨天'
+  if (d < 30) return `${d} 天前`
   if (d < 365) return `${Math.floor(d / 30)} 个月前`
   return `${Math.floor(d / 365)} 年前`
 }
@@ -545,7 +562,7 @@ function PluginCard({ entry, installedPhase, installedModuleName, expanded, onTo
         ) : null}
         <span style={css.dim}>★ {formatStars(entry.stars ?? 0)}</span>
         {when ? (
-          <span style={css.dim} title={`最后更新 ${entry.updatedAt ? String(entry.updatedAt).slice(0, 10) : ''}`}>
+          <span style={css.dim} title={`最后更新 ${localDateStr(entry.updatedAt)}`}>
             更新 {when}
           </span>
         ) : null}
@@ -603,13 +620,13 @@ function PluginCard({ entry, installedPhase, installedModuleName, expanded, onTo
             {version ? <span>{version}</span> : <span style={{ opacity: 0.6 }}>—（未声明）</span>}
           </DetailRow>
           <DetailRow label="上次更新">
-            {entry.updatedAt ? `${String(entry.updatedAt).slice(0, 10)}（${when || '未知'}）` : '未知'}
+            {entry.updatedAt ? `${localDateStr(entry.updatedAt)}（${when || '未知'}）` : '未知'}
           </DetailRow>
           <DetailRow label="发布">
-            {entry.publishedAt ? `${String(entry.publishedAt).slice(0, 10)}（${publishedWhen || '未知'}）` : '—（待审计）'}
+            {entry.publishedAt ? `${localDateStr(entry.publishedAt)}（${publishedWhen || '未知'}）` : '未知'}
           </DetailRow>
           <DetailRow label="大小">
-            {sizeLabel ? <span>约 {sizeLabel}（仓库体积）</span> : '—（待审计）'}
+            {sizeLabel ? <span>约 {sizeLabel}（仓库体积）</span> : '未知'}
           </DetailRow>
           <DetailRow label="许可证">{entry.license || '未声明'}</DetailRow>
           {entry.tier ? (
@@ -617,7 +634,7 @@ function PluginCard({ entry, installedPhase, installedModuleName, expanded, onTo
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
                 {entry.tier === 'verified' ? <IconCheckOutline14 size={11} /> : null}
                 {TIER_META[entry.tier]?.label || entry.tier}
-                {entry.auditAt ? <span style={{ fontSize: '10.5px', opacity: 0.7 }}>· {String(entry.auditAt).slice(0, 10)}</span> : null}
+                {entry.auditAt ? <span style={{ fontSize: '10.5px', opacity: 0.7 }}>· {localDateStr(entry.auditAt)}</span> : null}
               </span>
               {Array.isArray(entry.riskSignals) && entry.riskSignals.length > 0 ? (
                 <span style={{ display: 'block', fontSize: '11px', opacity: 0.85, marginTop: '2px' }}>
@@ -1012,7 +1029,7 @@ export function HubView({ listInstalled }) {
 
             <div className="hub-footer">
               <span>
-                共 {data.plugins.length} 个 · 数据 {String(data.generatedAt).slice(0, 10) || '未知'}
+                共 {data.plugins.length} 个 · 数据 {localDateStr(data.generatedAt) || '未知'}
               {verifiedCount > 0 ? ` · 已验证 ${verifiedCount}` : ''}
                 {data.origin === 'refreshed' ? ' · 已在线更新' : ' · 内嵌快照'}
               </span>
